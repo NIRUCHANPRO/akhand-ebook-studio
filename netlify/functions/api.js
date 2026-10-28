@@ -159,7 +159,6 @@ exports.handler = async (event) => {
         body: JSON.stringify({ email: user.email, name: user.name, tokens: user.tokens })
       };
     }
-
     // =========================================================
     // 3. CREATE CASHFREE ORDER (₹1 = 5 TOKENS)
     // =========================================================
@@ -173,7 +172,7 @@ exports.handler = async (event) => {
       }
 
       const amountInr = Math.max(1, Math.floor(Number(body.amount_inr || 1)));
-      const tokensToCredit = amountInr * 5; // STRICT RULE: ₹1 = 5 Tokens!
+      const tokensToCredit = amountInr * 5; 
       const orderId = `akhand_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
       const cfPayload = {
@@ -187,25 +186,32 @@ exports.handler = async (event) => {
           customer_name: body.name || email.split("@")[0]
         },
         order_meta: {
-          notify_url: "https://automaticebookmaker.netlify.app"
-        },
-        order_note: `Recharge ${tokensToCredit} Tokens (Rs ${amountInr})`
+          return_url: "https://automaticebookmaker.netlify.app"
+        }
       };
 
+      console.log("Calling Cashfree API at:", `${CF_BASE_URL}/orders`);
+      
       const cfRes = await fetch(`${CF_BASE_URL}/orders`, {
         method: "POST",
         headers: {
-          "x-client-id": CF_APP_ID,
-          "x-client-secret": CF_SECRET,
+          "x-client-id": CF_APP_ID.trim(),
+          "x-client-secret": CF_SECRET.trim(),
           "x-api-version": "2023-08-01",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify(cfPayload)
       });
 
       const cfData = await cfRes.json();
       if (!cfRes.ok) {
-        return { statusCode: cfRes.status, headers, body: JSON.stringify({ error: cfData.message || "Cashfree Order Error" }) };
+        console.error("Cashfree API Error Response:", cfData);
+        return { 
+          statusCode: cfRes.status, 
+          headers, 
+          body: JSON.stringify({ error: `Cashfree Error: ${cfData.message || JSON.stringify(cfData)}` }) 
+        };
       }
 
       return {
