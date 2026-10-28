@@ -1,9 +1,9 @@
 {
   "job_id": "job_1793184676711",
-  "progress": 82,
-  "message": "Rendering 1 Deep Modules into Kindle Pages (Zero Blank Space)...",
+  "progress": 95,
+  "message": "Direct Binary Streaming 1 Pages into PDF (0 MB RAM)...",
   "done": false,
   "pdf_url": "",
   "error": "",
-  "updated_at": 1793184720
+  "updated_at": 1793184721
 }
