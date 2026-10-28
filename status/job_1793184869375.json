@@ -1,9 +1,9 @@
 {
   "job_id": "job_1793184869375",
-  "progress": 95,
-  "message": "Direct Binary Streaming 1 Pages into PDF (0 MB RAM)...",
-  "done": false,
-  "pdf_url": "",
+  "progress": 100,
+  "message": "V6.0 Akhand Granth Ready! (1 Pages, 1 Deep Modules)",
+  "done": true,
+  "pdf_url": "https://github.com/NIRUCHANPRO/akhand-ebook-studio/releases/download/ebooks-vault/Nirwan_s_diary_job_1793184869375.pdf",
   "error": "",
-  "updated_at": 1793184895
+  "updated_at": 1793184898
 }
