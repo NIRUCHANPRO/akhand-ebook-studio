@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,7 +10,7 @@
 
   <div class="max-w-4xl mx-auto px-4 py-10">
     <!-- Header -->
-    <div class="text-center mb-10">
+    <div class="text-center mb-8">
       <span class="px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-400 text-xs font-bold tracking-widest uppercase">
         24/7 Cloud E-Book Publishing Engine
       </span>
@@ -20,6 +20,26 @@
       <p class="text-slate-400 mt-2 text-sm md:text-base">
         Topic ya Syllabus daalo, Cover & Theme chuno, aur 24/7 Cloud Engine se High-Res Kindle PDF pao!
       </p>
+    </div>
+
+    <!-- One-Time Cloud Setup Box (Sirf tab dikhega jab Netlify Function missing hoga aur pehli baar set karna hoga) -->
+    <div id="setupBanner" class="hidden mb-6 bg-amber-500/10 border border-amber-500/40 rounded-2xl p-5 space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-amber-300 font-bold text-sm uppercase tracking-wider">
+          ⚙️ One-Time Direct GitHub Cloud Link (Sirf 1 Baar Save Karna Hai)
+        </h3>
+        <button onclick="clearSavedCloudCreds()" class="text-xs text-slate-400 underline">Reset</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <input id="gh_repo_in" type="text" placeholder="GitHub Repo (e.g. NirwanSharma/akhand-ebook-studio)"
+          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-400" />
+        <input id="gh_pat_in" type="password" placeholder="GitHub Token (ghp_xxxxxxxxxxxx)"
+          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-400" />
+      </div>
+      <button onclick="saveCloudCreds()"
+        class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider hover:bg-amber-300">
+        💾 Save Forever in Browser
+      </button>
     </div>
 
     <!-- Main Form Card -->
@@ -34,7 +54,7 @@
         </div>
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Author Name</label>
-          <input id="author" type="text" placeholder="e.g. Nirwan Sharma"
+          <input id="author" type="text" value="Nirwan Sharma"
             class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
         </div>
       </div>
@@ -65,7 +85,7 @@
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Book Length / Volume</label>
           <select id="volume" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
             <option value="standard">📘 Standard Book (6-10 Chapters)</option>
-            <option value="mega">📚 Mega Granth (18+ Deep Chapters / Full Syllabus)</option>
+            <option value="mega">📚 Mega Granth (18+ Deep Modules / Full Syllabus)</option>
             <option value="quick">⚡ Quick 1-Chapter Guide / Story</option>
           </select>
         </div>
@@ -76,7 +96,7 @@
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
           Custom Cover Artwork Description (Khali chhodoge toh AI khud topic se banayega)
         </label>
-        <input id="cover_prompt" type="text" placeholder="e.g. Futuristic game developer coding holographic 3D robot in dark neon studio"
+        <input id="cover_prompt" type="text" placeholder="e.g. Anime style boy in Doraemon world, dramatic lighting"
           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
       </div>
 
@@ -95,7 +115,7 @@
         🚀 Generate High-Res E-Book PDF
       </button>
 
-      <!-- Live Progress Box (Hidden initially) -->
+      <!-- Live Progress Box -->
       <div id="progressBox" class="hidden pt-4 border-t border-slate-800 space-y-4">
         <div class="flex justify-between items-center text-sm">
           <span id="statusText" class="text-cyan-400 font-semibold animate-pulse">Starting Cloud Engine...</span>
@@ -104,7 +124,6 @@
         <div class="w-full h-4 bg-slate-950 rounded-full overflow-hidden border border-slate-800 p-0.5">
           <div id="progressBar" class="h-full bg-gradient-to-r from-cyan-400 via-sky-500 to-purple-500 rounded-full transition-all duration-500" style="width: 2%"></div>
         </div>
-        <!-- Download Button (Shows at 100%) -->
         <a id="downloadBtn" href="#" target="_blank"
           class="hidden block text-center w-full py-4 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition shadow-lg shadow-emerald-600/30">
           📥 Download Your Completed E-Book (PDF)
@@ -116,6 +135,26 @@
 
   <script>
     let pollTimer = null;
+    let useDirectGitHubMode = false;
+
+    function saveCloudCreds() {
+      const repo = document.getElementById("gh_repo_in").value.trim();
+      const pat = document.getElementById("gh_pat_in").value.trim();
+      if (!repo.includes("/") || !pat) {
+        alert("Bhai सही Repo naam (jaise NirwanSharma/repo-name) aur GitHub Token daalo!");
+        return;
+      }
+      localStorage.setItem("AKHAND_GH_REPO", repo);
+      localStorage.setItem("AKHAND_GH_PAT", pat);
+      document.getElementById("setupBanner").classList.add("hidden");
+      alert("Saved! Ab seedha Generate button dabao!");
+    }
+
+    function clearSavedCloudCreds() {
+      localStorage.removeItem("AKHAND_GH_REPO");
+      localStorage.removeItem("AKHAND_GH_PAT");
+      alert("Cleared!");
+    }
 
     async function startGeneration() {
       const topic = document.getElementById("topic").value.trim();
@@ -123,14 +162,6 @@
         alert("Bhai pehle Topic ya Syllabus toh daalo!");
         return;
       }
-
-      const btn = document.getElementById("genBtn");
-      const pBox = document.getElementById("progressBox");
-      const dBtn = document.getElementById("downloadBtn");
-      btn.disabled = true;
-      btn.classList.add("opacity-50");
-      pBox.classList.remove("hidden");
-      dBtn.classList.add("hidden");
 
       const payload = {
         title: document.getElementById("title").value,
@@ -142,17 +173,35 @@
         topic: topic
       };
 
+      const btn = document.getElementById("genBtn");
+      const pBox = document.getElementById("progressBox");
+      const dBtn = document.getElementById("downloadBtn");
+      btn.disabled = true;
+      btn.classList.add("opacity-50");
+      pBox.classList.remove("hidden");
+      dBtn.classList.add("hidden");
+
       try {
+        // Pehle Netlify Function try karo
         const res = await fetch("/.netlify/functions/api?action=start", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
+
+        const contentType = res.headers.get("content-type") || "";
+        // Agar Netlify Function 404 HTML (<!DOCTYPE) de raha hai, toh Direct GitHub Mode chalu karo!
+        if (!res.ok || !contentType.includes("application/json")) {
+          useDirectGitHubMode = true;
+          await startDirectGitHubJob(payload);
+          return;
+        }
+
         const data = await res.json();
         if (data.error) throw new Error(data.error);
 
-        updateUI(5, data.message || "Job started on GitHub Cloud...");
-        pollTimer = setInterval(() => checkStatus(data.job_id), 4000);
+        updateUI(5, data.message || "Dispatched to 24/7 GitHub Cloud...");
+        pollTimer = setInterval(() => checkStatus(data.job_id), 4500);
       } catch (err) {
         alert("Error: " + err.message);
         btn.disabled = false;
@@ -160,10 +209,75 @@
       }
     }
 
+    async function startDirectGitHubJob(payload) {
+      const repo = localStorage.getItem("AKHAND_GH_REPO");
+      const pat = localStorage.getItem("AKHAND_GH_PAT");
+
+      if (!repo || !pat) {
+        document.getElementById("setupBanner").classList.remove("hidden");
+        document.getElementById("genBtn").disabled = false;
+        document.getElementById("genBtn").classList.remove("opacity-50");
+        updateUI(0, "Upar पीले box mein 1 baar GitHub Repo aur Token save karo!");
+        return;
+      }
+
+      const jobId = `job_${Date.now()}`;
+      const dispatchUrl = `https://api.github.com/repos/${repo}/actions/workflows/generate_ebook.yml/dispatches`;
+
+      const ghRes = await fetch(dispatchUrl, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${pat}`,
+          "Accept": "application/vnd.github+json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ref: "main",
+          inputs: {
+            job_id: jobId,
+            payload_json: JSON.stringify(payload)
+          }
+        })
+      });
+
+      if (!ghRes.ok) {
+        const errTxt = await ghRes.text();
+        throw new Error(`GitHub Dispatch Failed (${ghRes.status}): Check repo name, branch 'main', or workflow file! ${errTxt}`);
+      }
+
+      updateUI(5, "Direct GitHub Cloud Runner Started! Waiting for live progress...");
+      pollTimer = setInterval(() => checkStatus(jobId), 4500);
+    }
+
     async function checkStatus(jobId) {
       try {
-        const res = await fetch(`/.netlify/functions/api?action=status&job_id=${jobId}`);
-        const data = await res.json();
+        let data = null;
+
+        if (!useDirectGitHubMode) {
+          const res = await fetch(`/.netlify/functions/api?action=status&job_id=${jobId}`);
+          const ct = res.headers.get("content-type") || "";
+          if (res.ok && ct.includes("application/json")) {
+            data = await res.json();
+          }
+        } else {
+          const repo = localStorage.getItem("AKHAND_GH_REPO");
+          const pat = localStorage.getItem("AKHAND_GH_PAT");
+          const sUrl = `https://api.github.com/repos/${repo}/contents/status/${jobId}.json?t=${Date.now()}`;
+          const res = await fetch(sUrl, {
+            headers: {
+              "Authorization": `Bearer ${pat}`,
+              "Accept": "application/vnd.github+json"
+            }
+          });
+          if (res.status === 404) {
+            data = { progress: 6, message: "GitHub Runner Booting & Installing Python...", done: false };
+          } else if (res.ok) {
+            const fileObj = await res.json();
+            data = JSON.parse(atob(fileObj.content));
+          }
+        }
+
+        if (!data) return;
         updateUI(data.progress || 5, data.message || "Processing...");
 
         if (data.done) {
