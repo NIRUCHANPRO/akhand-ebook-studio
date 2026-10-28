@@ -1,0 +1,42 @@
+name: 24-7 Cloud EBook Engine
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: 'Unique Job ID'
+        required: true
+        type: string
+      payload_json:
+        description: 'Book Configuration JSON'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build_ebook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install requests pillow
+
+      - name: Run Cloud E-Book Engine & Upload PDF
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          JOB_ID: ${{ inputs.job_id }}
+          PAYLOAD_JSON: ${{ inputs.payload_json }}
+        run: |
+          python cloud_worker.py
