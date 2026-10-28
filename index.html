@@ -5,44 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Akhand AI E-Book Studio 24/7</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Official Cashfree V3 Checkout SDK -->
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-cyan-500 selection:text-slate-950">
 
-  <div class="max-w-4xl mx-auto px-4 py-10">
-    <!-- Header -->
+  <!-- TOP NAVBAR (USER PROFILE + TOKEN WALLET + BUY TOKENS) -->
+  <nav class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center gap-2">
+        <span class="text-xl font-extrabold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+          ⚡ Akhand E-Book Studio
+        </span>
+      </div>
+
+      <!-- Logged Out View -->
+      <div id="navLoggedOut" class="flex items-center gap-3">
+        <button onclick="openAuthModal()"
+          class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-bold text-xs md:text-sm shadow-lg shadow-amber-500/20 hover:opacity-95 transition">
+          🎁 Sign In / Claim 10 FREE Tokens
+        </button>
+      </div>
+
+      <!-- Logged In View -->
+      <div id="navLoggedIn" class="hidden flex items-center gap-2.5">
+        <span id="userNameBadge" class="text-xs text-slate-400 hidden sm:inline"></span>
+        <div class="px-3.5 py-1.5 rounded-xl bg-slate-950 border border-cyan-500/40 flex items-center gap-1.5">
+          <span class="text-amber-400">🪙</span>
+          <span id="tokenCount" class="font-mono font-extrabold text-cyan-300 text-sm">0</span>
+          <span class="text-xs text-slate-400">Tokens</span>
+        </div>
+        <button onclick="openRechargeModal()"
+          class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs md:text-sm transition shadow-lg shadow-emerald-500/20">
+          + Buy Tokens (₹1 = 5 🪙)
+        </button>
+        <button onclick="logoutUser()" class="text-xs text-slate-500 hover:text-rose-400 px-2">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Hero Banner -->
     <div class="text-center mb-8">
       <span class="px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-400 text-xs font-bold tracking-widest uppercase">
-        24/7 Cloud E-Book Publishing Engine
+        24/7 Cloud E-Book Publishing Engine • ₹1 = 5 Tokens
       </span>
-      <h1 class="text-4xl md:text-5xl font-extrabold mt-4 bg-gradient-to-r from-cyan-400 via-sky-300 to-purple-400 bg-clip-text text-transparent">
-        Akhand AI E-Book Studio
+      <h1 class="text-3xl md:text-5xl font-extrabold mt-4 bg-gradient-to-r from-cyan-400 via-sky-300 to-purple-400 bg-clip-text text-transparent">
+        Create 1,000+ Page Kindle E-Books
       </h1>
       <p class="text-slate-400 mt-2 text-sm md:text-base">
-        Topic ya Syllabus daalo, Cover & Theme chuno, aur 24/7 Cloud Engine se High-Res Kindle PDF pao!
+        Naye account par <strong class="text-amber-400">10 Tokens FREE!</strong> Uske baad sirf <strong class="text-emerald-400">₹1 mein 5 Tokens</strong> recharge karo.
       </p>
     </div>
 
-    <!-- One-Time Cloud Setup Box (Sirf tab dikhega jab Netlify Function missing hoga aur pehli baar set karna hoga) -->
-    <div id="setupBanner" class="hidden mb-6 bg-amber-500/10 border border-amber-500/40 rounded-2xl p-5 space-y-4">
-      <div class="flex justify-between items-center">
-        <h3 class="text-amber-300 font-bold text-sm uppercase tracking-wider">
-          ⚙️ One-Time Direct GitHub Cloud Link (Sirf 1 Baar Save Karna Hai)
-        </h3>
-        <button onclick="clearSavedCloudCreds()" class="text-xs text-slate-400 underline">Reset</button>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <input id="gh_repo_in" type="text" placeholder="GitHub Repo (e.g. NirwanSharma/akhand-ebook-studio)"
-          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-400" />
-        <input id="gh_pat_in" type="password" placeholder="GitHub Token (ghp_xxxxxxxxxxxx)"
-          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-400" />
-      </div>
-      <button onclick="saveCloudCreds()"
-        class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider hover:bg-amber-300">
-        💾 Save Forever in Browser
-      </button>
-    </div>
-
-    <!-- Main Form Card -->
+    <!-- Main Studio Card -->
     <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6">
       
       <!-- Row 1: Title & Author -->
@@ -54,12 +70,12 @@
         </div>
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Author Name</label>
-          <input id="author" type="text" value="Nirwan Sharma"
+          <input id="author" type="text" placeholder="e.g. Nirwan Sharma"
             class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
         </div>
       </div>
 
-      <!-- Row 2: Cover Theme, Language & Volume -->
+      <!-- Row 2: Cover Theme, Language & Volume (With Token Cost) -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Cover & Page Theme</label>
@@ -82,11 +98,11 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Book Length / Volume</label>
-          <select id="volume" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
-            <option value="standard">📘 Standard Book (6-10 Chapters)</option>
-            <option value="mega">📚 Mega Granth (18+ Deep Modules / Full Syllabus)</option>
-            <option value="quick">⚡ Quick 1-Chapter Guide / Story</option>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Book Volume & Token Cost</label>
+          <select id="volume" onchange="updateButtonCost()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
+            <option value="quick">⚡ Quick Story / Guide (2 🪙 Tokens)</option>
+            <option value="standard" selected>📘 Standard Book (5 🪙 Tokens)</option>
+            <option value="mega">📚 Mega Granth 80+ Modules (10 🪙 Tokens)</option>
           </select>
         </div>
       </div>
@@ -96,7 +112,7 @@
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
           Custom Cover Artwork Description (Khali chhodoge toh AI khud topic se banayega)
         </label>
-        <input id="cover_prompt" type="text" placeholder="e.g. Anime style boy in Doraemon world, dramatic lighting"
+        <input id="cover_prompt" type="text" placeholder="e.g. Futuristic game developer coding holographic 3D robot in dark neon studio"
           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
       </div>
 
@@ -112,7 +128,7 @@
       <!-- Generate Button -->
       <button id="genBtn" onclick="startGeneration()"
         class="w-full py-4 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 transition shadow-lg shadow-cyan-500/20">
-        🚀 Generate High-Res E-Book PDF
+        🚀 Generate High-Res E-Book PDF (Cost: 5 🪙 Tokens)
       </button>
 
       <!-- Live Progress Box -->
@@ -133,45 +149,263 @@
     </div>
   </div>
 
+  <!-- ========================================================= -->
+  <!-- MODAL 1: SIGN IN / SIGN UP (10 FREE TOKENS)               -->
+  <!-- ========================================================= -->
+  <div id="authModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-extrabold text-white">🎁 Sign In / Create Account</h2>
+        <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+      <p class="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3">
+        ✨ Naya email dalne par aapka account apne-aap ban jayega aur turant <strong>10 FREE Tokens</strong> milenge!
+      </p>
+      <div class="space-y-3">
+        <input id="auth_name" type="text" placeholder="Aapka Naam (e.g. Nirwan)"
+          class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
+        <input id="auth_email" type="email" placeholder="Email Address *"
+          class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
+        <input id="auth_pass" type="password" placeholder="Password (min 4 chars) *"
+          class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
+      </div>
+      <button id="authSubmitBtn" onclick="submitAuth()"
+        class="w-full py-3.5 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-orange-500 hover:opacity-95 transition">
+        Continue & Claim Tokens 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 2: CASHFREE TOKEN RECHARGE (₹1 = 5 TOKENS)          -->
+  <!-- ========================================================= -->
+  <div id="rechargeModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-extrabold text-white">🪙 Recharge Tokens (₹1 = 5 🪙)</h2>
+        <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <!-- Quick Packs -->
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="setRechargeAmount(1)" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
+          <div class="text-lg font-extrabold text-cyan-400">₹1</div>
+          <div class="text-xs text-slate-300 font-semibold">5 Tokens 🪙</div>
+        </button>
+        <button onclick="setRechargeAmount(5)" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
+          <div class="text-lg font-extrabold text-cyan-400">₹5</div>
+          <div class="text-xs text-slate-300 font-semibold">25 Tokens 🪙</div>
+        </button>
+        <button onclick="setRechargeAmount(10)" class="p-3 rounded-xl bg-slate-950 border border-cyan-500/50 hover:border-cyan-400 text-left transition">
+          <div class="text-lg font-extrabold text-amber-400">₹10 (Popular)</div>
+          <div class="text-xs text-slate-300 font-semibold">50 Tokens 🪙</div>
+        </button>
+        <button onclick="setRechargeAmount(25)" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
+          <div class="text-lg font-extrabold text-emerald-400">₹25 (Mega Pack)</div>
+          <div class="text-xs text-slate-300 font-semibold">125 Tokens 🪙</div>
+        </button>
+      </div>
+
+      <!-- Custom Amount Input -->
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2">
+        <label class="block text-xs text-slate-400 uppercase font-semibold">Ya Apne Hisab Se Amount Daalo (₹)</label>
+        <div class="flex items-center gap-3">
+          <input id="customInr" type="number" min="1" value="10" oninput="updateCustomTokenCalc()"
+            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-lg font-bold text-white focus:outline-none focus:border-cyan-400" />
+          <div class="text-right min-w-[120px]">
+            <div id="calcTokensText" class="text-lg font-extrabold text-amber-400">= 50 🪙</div>
+            <div class="text-[11px] text-slate-500">Rate: ₹1 = 5 Tokens</div>
+          </div>
+        </div>
+      </div>
+
+      <button id="payBtn" onclick="payWithCashfree()"
+        class="w-full py-3.5 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-400 hover:opacity-95 transition shadow-lg shadow-emerald-500/20">
+        💳 Pay Instant via UPI / QR (Cashfree)
+      </button>
+    </div>
+  </div>
+
   <script>
     let pollTimer = null;
-    let useDirectGitHubMode = false;
 
-    function saveCloudCreds() {
-      const repo = document.getElementById("gh_repo_in").value.trim();
-      const pat = document.getElementById("gh_pat_in").value.trim();
-      if (!repo.includes("/") || !pat) {
-        alert("Bhai सही Repo naam (jaise NirwanSharma/repo-name) aur GitHub Token daalo!");
+    // Load User on Page Startup
+    window.addEventListener("DOMContentLoaded", () => {
+      updateButtonCost();
+      const savedToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
+      if (savedToken) {
+        refreshUserProfile();
+      }
+    });
+
+    function updateButtonCost() {
+      const vol = document.getElementById("volume").value;
+      const cost = vol === "quick" ? 2 : (vol === "mega" ? 10 : 5);
+      document.getElementById("genBtn").innerText = `🚀 Generate High-Res E-Book PDF (Cost: ${cost} 🪙 Tokens)`;
+    }
+
+    function openAuthModal() { document.getElementById("authModal").classList.remove("hidden"); }
+    function closeAuthModal() { document.getElementById("authModal").classList.add("hidden"); }
+    function openRechargeModal() { document.getElementById("rechargeModal").classList.remove("hidden"); }
+    function closeRechargeModal() { document.getElementById("rechargeModal").classList.add("hidden"); }
+
+    function setRechargeAmount(amt) {
+      document.getElementById("customInr").value = amt;
+      updateCustomTokenCalc();
+    }
+
+    function updateCustomTokenCalc() {
+      const amt = Math.max(1, Math.floor(Number(document.getElementById("customInr").value || 1)));
+      document.getElementById("calcTokensText").innerText = `= ${amt * 5} 🪙`;
+    }
+
+    async function submitAuth() {
+      const name = document.getElementById("auth_name").value.trim();
+      const email = document.getElementById("auth_email").value.trim();
+      const password = document.getElementById("auth_pass").value.trim();
+      const btn = document.getElementById("authSubmitBtn");
+
+      if (!email || !password) {
+        alert("Bhai Email aur Password dono daalo!");
         return;
       }
-      localStorage.setItem("AKHAND_GH_REPO", repo);
-      localStorage.setItem("AKHAND_GH_PAT", pat);
-      document.getElementById("setupBanner").classList.add("hidden");
-      alert("Saved! Ab seedha Generate button dabao!");
+
+      btn.disabled = true;
+      btn.innerText = "Checking Account...";
+
+      try {
+        const res = await fetch("/.netlify/functions/api?action=auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || "Login Failed");
+
+        localStorage.setItem("AKHAND_AUTH_TOKEN", data.auth_token);
+        localStorage.setItem("AKHAND_USER_EMAIL", data.email);
+        localStorage.setItem("AKHAND_USER_NAME", data.name);
+
+        renderLoggedInState(data.name, data.tokens);
+        closeAuthModal();
+        if (data.is_new) {
+          alert(data.message);
+        }
+      } catch (err) {
+        alert("Auth Error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Continue & Claim Tokens 🚀";
+      }
     }
 
-    function clearSavedCloudCreds() {
-      localStorage.removeItem("AKHAND_GH_REPO");
-      localStorage.removeItem("AKHAND_GH_PAT");
-      alert("Cleared!");
+    async function refreshUserProfile() {
+      const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
+      if (!authToken) return;
+      try {
+        const res = await fetch(`/.netlify/functions/api?action=me&auth_token=${encodeURIComponent(authToken)}`);
+        if (!res.ok) {
+          logoutUser();
+          return;
+        }
+        const data = await res.json();
+        renderLoggedInState(data.name, data.tokens);
+      } catch (e) {
+        console.log("Profile check error:", e);
+      }
     }
 
+    function renderLoggedInState(name, tokens) {
+      document.getElementById("navLoggedOut").classList.add("hidden");
+      document.getElementById("navLoggedIn").classList.remove("hidden");
+      document.getElementById("userNameBadge").innerText = `Hi, ${name}`;
+      document.getElementById("tokenCount").innerText = tokens;
+    }
+
+    function logoutUser() {
+      localStorage.removeItem("AKHAND_AUTH_TOKEN");
+      document.getElementById("navLoggedIn").classList.add("hidden");
+      document.getElementById("navLoggedOut").classList.remove("hidden");
+    }
+
+    // =========================================================
+    // CASHFREE V3 INSTANT CHECKOUT FLOW
+    // =========================================================
+    async function payWithCashfree() {
+      const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
+      if (!authToken) {
+        closeRechargeModal();
+        openAuthModal();
+        return;
+      }
+
+      const amountInr = Math.max(1, Math.floor(Number(document.getElementById("customInr").value || 1)));
+      const payBtn = document.getElementById("payBtn");
+      payBtn.disabled = true;
+      payBtn.innerText = "Creating Cashfree Order...";
+
+      try {
+        const res = await fetch("/.netlify/functions/api?action=create_order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            auth_token: authToken,
+            amount_inr: amountInr,
+            name: localStorage.getItem("AKHAND_USER_NAME") || "User"
+          })
+        });
+        const orderData = await res.json();
+        if (!res.ok || orderData.error) throw new Error(orderData.error || "Order creation failed");
+
+        const cashfree = Cashfree({ mode: orderData.cf_env || "production" });
+        const result = await cashfree.checkout({
+          paymentSessionId: orderData.payment_session_id,
+          redirectTarget: "_modal"
+        });
+
+        if (result.error) {
+          throw new Error(result.error.message || "Payment cancelled or failed");
+        }
+
+        // Verify payment from backend & credit tokens
+        payBtn.innerText = "Verifying Payment & Adding Tokens...";
+        const vRes = await fetch("/.netlify/functions/api?action=verify_order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            auth_token: authToken,
+            order_id: orderData.order_id
+          })
+        });
+        const vData = await vRes.json();
+        if (!vRes.ok || vData.error) throw new Error(vData.error || "Verification failed");
+
+        document.getElementById("tokenCount").innerText = vData.tokens;
+        closeRechargeModal();
+        alert(vData.message || `🎉 +${amountInr * 5} Tokens Added!`);
+      } catch (err) {
+        alert("Payment Alert: " + err.message);
+      } finally {
+        payBtn.disabled = false;
+        payBtn.innerText = "💳 Pay Instant via UPI / QR (Cashfree)";
+      }
+    }
+
+    // =========================================================
+    // START E-BOOK GENERATION (VERIFIES & DEDUCTS TOKENS)
+    // =========================================================
     async function startGeneration() {
+      const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
+      if (!authToken) {
+        openAuthModal();
+        return;
+      }
+
       const topic = document.getElementById("topic").value.trim();
       if (!topic) {
         alert("Bhai pehle Topic ya Syllabus toh daalo!");
         return;
       }
-
-      const payload = {
-        title: document.getElementById("title").value,
-        author: document.getElementById("author").value,
-        theme: document.getElementById("theme").value,
-        language: document.getElementById("language").value,
-        volume: document.getElementById("volume").value,
-        cover_prompt: document.getElementById("cover_prompt").value,
-        topic: topic
-      };
 
       const btn = document.getElementById("genBtn");
       const pBox = document.getElementById("progressBox");
@@ -181,26 +415,39 @@
       pBox.classList.remove("hidden");
       dBtn.classList.add("hidden");
 
+      const payload = {
+        auth_token: authToken,
+        title: document.getElementById("title").value,
+        author: document.getElementById("author").value,
+        theme: document.getElementById("theme").value,
+        language: document.getElementById("language").value,
+        volume: document.getElementById("volume").value,
+        cover_prompt: document.getElementById("cover_prompt").value,
+        topic: topic
+      };
+
       try {
-        // Pehle Netlify Function try karo
         const res = await fetch("/.netlify/functions/api?action=start", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
+        const data = await res.json();
 
-        const contentType = res.headers.get("content-type") || "";
-        // Agar Netlify Function 404 HTML (<!DOCTYPE) de raha hai, toh Direct GitHub Mode chalu karo!
-        if (!res.ok || !contentType.includes("application/json")) {
-          useDirectGitHubMode = true;
-          await startDirectGitHubJob(payload);
+        if (res.status === 402 || data.need_recharge) {
+          alert(data.error);
+          openRechargeModal();
+          btn.disabled = false;
+          btn.classList.remove("opacity-50");
           return;
         }
+        if (!res.ok || data.error) throw new Error(data.error || "Failed to start");
 
-        const data = await res.json();
-        if (data.error) throw new Error(data.error);
+        if (data.tokens_remaining !== undefined) {
+          document.getElementById("tokenCount").innerText = data.tokens_remaining;
+        }
 
-        updateUI(5, data.message || "Dispatched to 24/7 GitHub Cloud...");
+        updateUI(5, data.message || "Job started on GitHub Cloud...");
         pollTimer = setInterval(() => checkStatus(data.job_id), 4500);
       } catch (err) {
         alert("Error: " + err.message);
@@ -209,75 +456,10 @@
       }
     }
 
-    async function startDirectGitHubJob(payload) {
-      const repo = localStorage.getItem("AKHAND_GH_REPO");
-      const pat = localStorage.getItem("AKHAND_GH_PAT");
-
-      if (!repo || !pat) {
-        document.getElementById("setupBanner").classList.remove("hidden");
-        document.getElementById("genBtn").disabled = false;
-        document.getElementById("genBtn").classList.remove("opacity-50");
-        updateUI(0, "Upar पीले box mein 1 baar GitHub Repo aur Token save karo!");
-        return;
-      }
-
-      const jobId = `job_${Date.now()}`;
-      const dispatchUrl = `https://api.github.com/repos/${repo}/actions/workflows/generate_ebook.yml/dispatches`;
-
-      const ghRes = await fetch(dispatchUrl, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${pat}`,
-          "Accept": "application/vnd.github+json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ref: "main",
-          inputs: {
-            job_id: jobId,
-            payload_json: JSON.stringify(payload)
-          }
-        })
-      });
-
-      if (!ghRes.ok) {
-        const errTxt = await ghRes.text();
-        throw new Error(`GitHub Dispatch Failed (${ghRes.status}): Check repo name, branch 'main', or workflow file! ${errTxt}`);
-      }
-
-      updateUI(5, "Direct GitHub Cloud Runner Started! Waiting for live progress...");
-      pollTimer = setInterval(() => checkStatus(jobId), 4500);
-    }
-
     async function checkStatus(jobId) {
       try {
-        let data = null;
-
-        if (!useDirectGitHubMode) {
-          const res = await fetch(`/.netlify/functions/api?action=status&job_id=${jobId}`);
-          const ct = res.headers.get("content-type") || "";
-          if (res.ok && ct.includes("application/json")) {
-            data = await res.json();
-          }
-        } else {
-          const repo = localStorage.getItem("AKHAND_GH_REPO");
-          const pat = localStorage.getItem("AKHAND_GH_PAT");
-          const sUrl = `https://api.github.com/repos/${repo}/contents/status/${jobId}.json?t=${Date.now()}`;
-          const res = await fetch(sUrl, {
-            headers: {
-              "Authorization": `Bearer ${pat}`,
-              "Accept": "application/vnd.github+json"
-            }
-          });
-          if (res.status === 404) {
-            data = { progress: 6, message: "GitHub Runner Booting & Installing Python...", done: false };
-          } else if (res.ok) {
-            const fileObj = await res.json();
-            data = JSON.parse(atob(fileObj.content));
-          }
-        }
-
-        if (!data) return;
+        const res = await fetch(`/.netlify/functions/api?action=status&job_id=${jobId}`);
+        const data = await res.json();
         updateUI(data.progress || 5, data.message || "Processing...");
 
         if (data.done) {
