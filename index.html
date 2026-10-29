@@ -330,70 +330,51 @@
 
     // =========================================================
     // CASHFREE V3 INSTANT CHECKOUT FLOW
-    // =========================================================
-        let paymentPollTimer = null;
+        // 👇 Yahan apna Cashfree Dashboard -> Payment Forms wala link paste karo:
+    const CF_PAYMENT_FORM_URL = "https://payments.cashfree.com/forms?code=uriNC";
+
+    let balancePollTimer = null;
 
     async function payWithCashfree() {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
+      const userEmail = localStorage.getItem("AKHAND_USER_EMAIL") || "";
       if (!authToken) {
         closeRechargeModal();
         openAuthModal();
         return;
       }
 
-      const amountInr = Math.max(1, Math.floor(Number(document.getElementById("customInr").value || 1)));
+      const oldTokens = Number(document.getElementById("tokenCount").innerText || 0);
       const payBtn = document.getElementById("payBtn");
+
+      alert(`Dhyan rahe: Payment Form mein apna wahi Email (${userEmail}) daalna jisse yahan Sign-In kiya hai, taaki payment hote hi tokens turant aapke account mein jud jayein!`);
+
+      // Open Cashfree Hosted Payment Form in new tab
+      window.open(CF_PAYMENT_FORM_URL, "_blank");
+
       payBtn.disabled = true;
-      payBtn.innerText = "Generating Official Cashfree Link...";
+      payBtn.innerText = "⏳ Checking Payment Status Automatically...";
 
-      try {
-        const res = await fetch("/.netlify/functions/api?action=create_order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            auth_token: authToken,
-            amount_inr: amountInr,
-            name: localStorage.getItem("AKHAND_USER_NAME") || "Customer"
-          })
-        });
-        const orderData = await res.json();
-        if (!res.ok || orderData.error) throw new Error(orderData.error || "Link creation failed");
-
-        // Open Cashfree Official Hosted Payment Page (No domain whitelisting required!)
-        window.open(orderData.payment_url, "_blank");
-
-        payBtn.innerText = "⏳ Waiting for UPI Payment... (Pay in new tab)";
-        if (paymentPollTimer) clearInterval(paymentPollTimer);
-
-        paymentPollTimer = setInterval(async () => {
-          try {
-            const vRes = await fetch("/.netlify/functions/api?action=verify_order", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                auth_token: authToken,
-                order_id: orderData.order_id
-              })
-            });
-            const vData = await vRes.json();
-            if (vData.paid) {
-              clearInterval(paymentPollTimer);
-              document.getElementById("tokenCount").innerText = vData.tokens;
+      if (balancePollTimer) clearInterval(balancePollTimer);
+      balancePollTimer = setInterval(async () => {
+        try {
+          const res = await fetch(`/.netlify/functions/api?action=me&auth_token=${encodeURIComponent(authToken)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (Number(data.tokens) > oldTokens) {
+              clearInterval(balancePollTimer);
+              const added = Number(data.tokens) - oldTokens;
+              document.getElementById("tokenCount").innerText = data.tokens;
               payBtn.disabled = false;
               payBtn.innerText = "💳 Pay Instant via UPI / QR (Cashfree)";
               closeRechargeModal();
-              alert(vData.message || `🎉 +${amountInr * 5} Tokens Added!`);
+              alert(`🎉 Payment Successful! +${added} Tokens aapke wallet mein jud gaye!`);
             }
-          } catch (e) {
-            console.log("Checking payment status...", e);
           }
-        }, 3500);
-
-      } catch (err) {
-        alert("Payment Alert: " + err.message);
-        payBtn.disabled = false;
-        payBtn.innerText = "💳 Pay Instant via UPI / QR (Cashfree)";
-      }
+        } catch (e) {
+          console.log("Polling wallet balance...", e);
+        }
+      }, 4000);
     }
 
 
