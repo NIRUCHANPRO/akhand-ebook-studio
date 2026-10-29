@@ -159,8 +159,8 @@ exports.handler = async (event) => {
         body: JSON.stringify({ email: user.email, name: user.name, tokens: user.tokens })
       };
     }
-    // =========================================================
-    // 3. CREATE CASHFREE ORDER (₹1 = 5 TOKENS)
+        // =========================================================
+    // 3. CREATE CASHFREE PAYMENT LINK (ZERO DOMAIN WHITELISTING NEEDED!)
     // =========================================================
     if (action === "create_order" && event.httpMethod === "POST") {
       const email = verifyAuthToken(body.auth_token);
@@ -172,27 +172,26 @@ exports.handler = async (event) => {
       }
 
       const amountInr = Math.max(1, Math.floor(Number(body.amount_inr || 1)));
-      const tokensToCredit = amountInr * 5; 
-      const orderId = `akhand_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const tokensToCredit = amountInr * 5; // ₹1 = 5 Tokens
+      const linkId = `akhand_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
-      const cfPayload = {
-        order_id: orderId,
-        order_amount: amountInr,
-        order_currency: "INR",
+      const cfLinkPayload = {
+        link_id: linkId,
+        link_amount: amountInr,
+        link_currency: "INR",
+        link_purpose: `Recharge ${tokensToCredit} Studio Tokens`,
         customer_details: {
-          customer_id: hashStr(email).slice(0, 16),
+          customer_phone: body.phone || "9876543210",
           customer_email: email,
-          customer_phone: body.phone || "9999999999",
-          customer_name: body.name || email.split("@")[0]
+          customer_name: (body.name || email.split("@")[0] || "Customer").replace(/[^a-zA-Z0-9 ]/g, "") || "Customer"
         },
-        order_meta: {
-          return_url: "https://automaticebookmaker.netlify.app"
+        link_notify: {
+          send_sms: false,
+          send_email: false
         }
       };
 
-      console.log("Calling Cashfree API at:", `${CF_BASE_URL}/orders`);
-      
-      const cfRes = await fetch(`${CF_BASE_URL}/orders`, {
+      const cfRes = await fetch(`${CF_BASE_URL}/links`, {
         method: "POST",
         headers: {
           "x-client-id": CF_APP_ID.trim(),
@@ -201,16 +200,15 @@ exports.handler = async (event) => {
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: JSON.stringify(cfPayload)
+        body: JSON.stringify(cfLinkPayload)
       });
 
       const cfData = await cfRes.json();
       if (!cfRes.ok) {
-        console.error("Cashfree API Error Response:", cfData);
-        return { 
-          statusCode: cfRes.status, 
-          headers, 
-          body: JSON.stringify({ error: `Cashfree Error: ${cfData.message || JSON.stringify(cfData)}` }) 
+        return {
+          statusCode: cfRes.status,
+          headers,
+          body: JSON.stringify({ error: `Cashfree Error: ${cfData.message || JSON.stringify(cfData)}` })
         };
       }
 
@@ -218,52 +216,50 @@ exports.handler = async (event) => {
         statusCode: 200,
         headers,
         body: JSON.stringify({
-          order_id: cfData.order_id,
-          payment_session_id: cfData.payment_session_id,
+          order_id: cfData.link_id,
+          payment_url: cfData.link_url,
           amount_inr: amountInr,
-          tokens_to_add: tokensToCredit,
-          cf_env: CF_ENV === "SANDBOX" ? "sandbox" : "production"
+          tokens_to_add: tokensToCredit
         })
       };
     }
 
     // =========================================================
-    // 4. VERIFY CASHFREE PAYMENT & ADD TOKENS (ANTI-FRAUD LOCK)
+    // 4. VERIFY CASHFREE PAYMENT LINK STATUS & ADD TOKENS
     // =========================================================
     if (action === "verify_order" && event.httpMethod === "POST") {
       const email = verifyAuthToken(body.auth_token);
-      const orderId = (body.order_id || "").trim();
-      if (!email || !orderId) {
+      const linkId = (body.order_id || "").trim();
+      if (!email || !linkId) {
         return { statusCode: 400, headers, body: JSON.stringify({ error: "Invalid request" }) };
       }
 
-      // Check if order was already credited
-      const orderFile = `db/orders/${orderId}.json`;
+      const orderFile = `db/orders/${linkId}.json`;
       const { data: existingOrder } = await readGhJson(orderFile);
       if (existingOrder) {
-        return { statusCode: 200, headers, body: JSON.stringify({ already_credited: true, tokens: existingOrder.new_balance }) };
+        return { statusCode: 200, headers, body: JSON.stringify({ paid: true, already_credited: true, tokens: existingOrder.new_balance }) };
       }
 
-      // Verify payment status directly from Cashfree Server
-      const cfRes = await fetch(`${CF_BASE_URL}/orders/${orderId}`, {
+      const cfRes = await fetch(`${CF_BASE_URL}/links/${linkId}`, {
         method: "GET",
         headers: {
-          "x-client-id": CF_APP_ID,
-          "x-client-secret": CF_SECRET,
-          "x-api-version": "2023-08-01"
+          "x-client-id": CF_APP_ID.trim(),
+          "x-client-secret": CF_SECRET.trim(),
+          "x-api-version": "2023-08-01",
+          "Accept": "application/json"
         }
       });
       const cfData = await cfRes.json();
 
-      if (cfData.order_status !== "PAID") {
+      if (cfData.link_status !== "PAID") {
         return {
-          statusCode: 400,
+          statusCode: 200,
           headers,
-          body: JSON.stringify({ error: `Payment abhi complete nahi hua hai (Status: ${cfData.order_status})` })
+          body: JSON.stringify({ paid: false, status: cfData.link_status || "ACTIVE" })
         };
       }
 
-      const paidAmount = Math.floor(Number(cfData.order_amount || 0));
+      const paidAmount = Math.floor(Number(cfData.link_amount || 0));
       const tokensEarned = paidAmount * 5; // ₹1 = 5 Tokens
 
       const userFile = `db/users/${hashStr(email).slice(0, 20)}.json`;
@@ -274,18 +270,19 @@ exports.handler = async (event) => {
       await writeGhJson(userFile, user, `Credited ${tokensEarned} tokens to ${email}`, userSha);
 
       await writeGhJson(orderFile, {
-        order_id: orderId,
+        order_id: linkId,
         email,
         amount_inr: paidAmount,
         tokens_added: tokensEarned,
         new_balance: user.tokens,
         paid_at: Date.now()
-      }, `Order ${orderId} paid`);
+      }, `Link ${linkId} paid`);
 
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({
+          paid: true,
           success: true,
           tokens_added: tokensEarned,
           tokens: user.tokens,
@@ -293,6 +290,7 @@ exports.handler = async (event) => {
         })
       };
     }
+
 
     // =========================================================
     // 5. DEDUCT TOKENS & START E-BOOK GENERATION ON GITHUB
