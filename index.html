@@ -331,6 +331,8 @@
     // =========================================================
     // CASHFREE V3 INSTANT CHECKOUT FLOW
     // =========================================================
+        let paymentPollTimer = null;
+
     async function payWithCashfree() {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
       if (!authToken) {
@@ -342,7 +344,7 @@
       const amountInr = Math.max(1, Math.floor(Number(document.getElementById("customInr").value || 1)));
       const payBtn = document.getElementById("payBtn");
       payBtn.disabled = true;
-      payBtn.innerText = "Creating Cashfree Order...";
+      payBtn.innerText = "Generating Official Cashfree Link...";
 
       try {
         const res = await fetch("/.netlify/functions/api?action=create_order", {
@@ -351,45 +353,49 @@
           body: JSON.stringify({
             auth_token: authToken,
             amount_inr: amountInr,
-            name: localStorage.getItem("AKHAND_USER_NAME") || "User"
+            name: localStorage.getItem("AKHAND_USER_NAME") || "Customer"
           })
         });
         const orderData = await res.json();
-        if (!res.ok || orderData.error) throw new Error(orderData.error || "Order creation failed");
+        if (!res.ok || orderData.error) throw new Error(orderData.error || "Link creation failed");
 
-        const cashfree = Cashfree({ mode: orderData.cf_env || "production" });
-        const result = await cashfree.checkout({
-          paymentSessionId: orderData.payment_session_id,
-          redirectTarget: "_modal"
-        });
+        // Open Cashfree Official Hosted Payment Page (No domain whitelisting required!)
+        window.open(orderData.payment_url, "_blank");
 
-        if (result.error) {
-          throw new Error(result.error.message || "Payment cancelled or failed");
-        }
+        payBtn.innerText = "⏳ Waiting for UPI Payment... (Pay in new tab)";
+        if (paymentPollTimer) clearInterval(paymentPollTimer);
 
-        // Verify payment from backend & credit tokens
-        payBtn.innerText = "Verifying Payment & Adding Tokens...";
-        const vRes = await fetch("/.netlify/functions/api?action=verify_order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            auth_token: authToken,
-            order_id: orderData.order_id
-          })
-        });
-        const vData = await vRes.json();
-        if (!vRes.ok || vData.error) throw new Error(vData.error || "Verification failed");
+        paymentPollTimer = setInterval(async () => {
+          try {
+            const vRes = await fetch("/.netlify/functions/api?action=verify_order", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                auth_token: authToken,
+                order_id: orderData.order_id
+              })
+            });
+            const vData = await vRes.json();
+            if (vData.paid) {
+              clearInterval(paymentPollTimer);
+              document.getElementById("tokenCount").innerText = vData.tokens;
+              payBtn.disabled = false;
+              payBtn.innerText = "💳 Pay Instant via UPI / QR (Cashfree)";
+              closeRechargeModal();
+              alert(vData.message || `🎉 +${amountInr * 5} Tokens Added!`);
+            }
+          } catch (e) {
+            console.log("Checking payment status...", e);
+          }
+        }, 3500);
 
-        document.getElementById("tokenCount").innerText = vData.tokens;
-        closeRechargeModal();
-        alert(vData.message || `🎉 +${amountInr * 5} Tokens Added!`);
       } catch (err) {
         alert("Payment Alert: " + err.message);
-      } finally {
         payBtn.disabled = false;
         payBtn.innerText = "💳 Pay Instant via UPI / QR (Cashfree)";
       }
     }
+
 
     // =========================================================
     // START E-BOOK GENERATION (VERIFIES & DEDUCTS TOKENS)
