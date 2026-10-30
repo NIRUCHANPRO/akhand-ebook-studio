@@ -81,7 +81,21 @@ exports.handler = async (event) => {
     return sig === expectedSig ? email : null;
   }
 
-  // Deep scanner to find email & amount anywhere inside Cashfree Payment Form JSON
+  function isSuspiciousOrDisposableEmail(email) {
+    const parts = email.split("@");
+    if (parts.length !== 2) return true;
+    const [local, domain] = parts;
+    const blockedDomains = new Set([
+      "tempmail.com", "10minutemail.com", "guerrillamail.com", "yopmail.com",
+      "mailinator.com", "trashmail.com", "sharklasers.com", "getnada.com", "temp-mail.org"
+    ]);
+    if (blockedDomains.has(domain)) return true;
+    if (local.length < 4 || /^(test|fake|user|admin|abcd|asdf|qwerty|1234)/i.test(local)) return true;
+    // Block repeated gibberish like aaaaa@gmail.com
+    if (/^(.)\1{3,}/.test(local)) return true;
+    return false;
+  }
+
   function findEmailInObject(obj) {
     if (!obj) return "";
     if (typeof obj === "string") {
@@ -118,15 +132,27 @@ exports.handler = async (event) => {
     const action = event.queryStringParameters?.action || "";
 
     // =========================================================
-    // 1. SIGN UP / LOGIN (10 FREE TOKENS ON NEW ACCOUNT)
+    // 1. SIGN UP / LOGIN (WITH IP + DEVICE ANTI-ABUSE LOCK!)
     // =========================================================
     if (action === "auth" && event.httpMethod === "POST") {
       const email = (body.email || "").trim().toLowerCase();
       const password = (body.password || "").trim();
       const name = (body.name || email.split("@")[0] || "Creator").trim();
+      const deviceId = (body.device_id || "").trim();
+
+      const clientIp = (
+        event.headers["x-nf-client-connection-ip"] ||
+        event.headers["client-ip"] ||
+        (event.headers["x-forwarded-for"] || "").split(",")[0] ||
+        "unknown_ip"
+      ).trim();
 
       if (!email.includes("@") || password.length < 4) {
         return { statusCode: 400, headers, body: JSON.stringify({ error: "Sahi Email aur kam se kam 4 akshar ka Password daalo!" }) };
+      }
+
+      if (isSuspiciousOrDisposableEmail(email)) {
+        return { statusCode: 400, headers, body: JSON.stringify({ error: "Fake ya temporary email allowed nahi hai! Apna asli personal Email daalo." }) };
       }
 
       const userFile = `db/users/${hashStr(email).slice(0, 20)}.json`;
@@ -134,8 +160,32 @@ exports.handler = async (event) => {
       const passHash = hashStr(password + GH_PAT);
 
       if (!existingUser) {
-        const newUser = { email, name, passHash, tokens: 10, created_at: Date.now() };
+        // Check if this IP or Device has ALREADY claimed the 10 Free Tokens!
+        const ipClaimFile = `db/claims/ip_${hashStr(clientIp).slice(0, 16)}.json`;
+        const devClaimFile = deviceId ? `db/claims/dev_${hashStr(deviceId).slice(0, 16)}.json` : null;
+
+        const { data: ipClaimed } = await readGhJson(ipClaimFile);
+        const { data: devClaimed } = devClaimFile ? await readGhJson(devClaimFile) : { data: null };
+
+        const alreadyClaimedFreeTokens = Boolean(ipClaimed || devClaimed);
+        const startingTokens = alreadyClaimedFreeTokens ? 0 : 10;
+
+        const newUser = {
+          email,
+          name,
+          passHash,
+          tokens: startingTokens,
+          created_at: Date.now()
+        };
         await writeGhJson(userFile, newUser, `New user signup: ${email}`);
+
+        if (!alreadyClaimedFreeTokens) {
+          await writeGhJson(ipClaimFile, { email, claimed_at: Date.now() }, `IP claim lock`);
+          if (devClaimFile) {
+            await writeGhJson(devClaimFile, { email, claimed_at: Date.now() }, `Device claim lock`);
+          }
+        }
+
         return {
           statusCode: 200,
           headers,
@@ -143,9 +193,11 @@ exports.handler = async (event) => {
             auth_token: createAuthToken(email),
             email,
             name,
-            tokens: 10,
+            tokens: startingTokens,
             is_new: true,
-            message: "🎉 Welcome! Aapko 10 FREE Tokens mile hain!"
+            message: alreadyClaimedFreeTokens
+              ? "⚠️ Is device/network par 10 Free Tokens pehle hi dusre account par mil chuke hain! Is naye account mein 0 Tokens hain. Recharge (₹1 = 5 Tokens) karke use karein."
+              : "🎉 Welcome! Aapko 10 FREE Tokens mile hain!"
           })
         };
       } else {
@@ -186,7 +238,7 @@ exports.handler = async (event) => {
     }
 
     // =========================================================
-    // 3. INSTANT CLAIM BY CASHFREE ORDER ID (e.g. CFPay_...)
+    // 3. BACKUP CLAIM BY CASHFREE ORDER ID (e.g. CFPay_...)
     // =========================================================
     if (action === "claim_order" && event.httpMethod === "POST") {
       const email = verifyAuthToken(body.auth_token);
@@ -333,8 +385,7 @@ exports.handler = async (event) => {
     }
 
     // =========================================================
-    // 6. CASHFREE PAYMENT FORM & ORDER WEBHOOK HANDLER (FIXED!)
-    // Fixed: Reads wfData.order AND wfData.form separately without shadowing!
+    // 6. AUTOMATIC CASHFREE WEBHOOK HANDLER (INSTANT CREDIT!)
     // =========================================================
     const wfData = body.data || body || {};
     const orderObj = wfData.order || {};
