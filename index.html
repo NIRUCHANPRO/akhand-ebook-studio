@@ -8,7 +8,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-cyan-500 selection:text-slate-950">
 
-  <!-- TOP NAVBAR (USER PROFILE + TOKEN WALLET + BUY TOKENS) -->
+  <!-- TOP NAVBAR -->
   <nav class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
     <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
       <div class="flex items-center gap-2">
@@ -52,14 +52,13 @@
         Create 1,000+ Page Kindle E-Books
       </h1>
       <p class="text-slate-400 mt-2 text-sm md:text-base">
-        Naye account par <strong class="text-amber-400">10 Tokens FREE!</strong> Uske baad sirf <strong class="text-emerald-400">₹1 mein 5 Tokens</strong> recharge karo.
+        Naye user ko <strong class="text-amber-400">10 Tokens FREE!</strong> Uske baad sirf <strong class="text-emerald-400">₹1 mein 5 Tokens</strong> instant recharge.
       </p>
     </div>
 
     <!-- Main Studio Card -->
     <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6">
       
-      <!-- Row 1: Title & Author -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Book Title (Optional)</label>
@@ -73,7 +72,6 @@
         </div>
       </div>
 
-      <!-- Row 2: Cover Theme, Language & Volume (With Token Cost) -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Cover & Page Theme</label>
@@ -105,7 +103,6 @@
         </div>
       </div>
 
-      <!-- Row 3: Custom Cover Art Prompt -->
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
           Custom Cover Artwork Description (Khali chhodoge toh AI khud topic se banayega)
@@ -114,7 +111,6 @@
           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
       </div>
 
-      <!-- Row 4: Topic / Full Syllabus -->
       <div>
         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
           Book Topic / Story Idea / Full Chapter Syllabus *
@@ -123,7 +119,6 @@
           class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-cyan-400"></textarea>
       </div>
 
-      <!-- Generate Button -->
       <button id="genBtn" onclick="startGeneration()"
         class="w-full py-4 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 transition shadow-lg shadow-cyan-500/20">
         🚀 Generate High-Res E-Book PDF (Cost: 5 🪙 Tokens)
@@ -148,7 +143,7 @@
   </div>
 
   <!-- ========================================================= -->
-  <!-- MODAL 1: SIGN IN / SIGN UP (10 FREE TOKENS)               -->
+  <!-- MODAL 1: SIGN IN / SIGN UP (ANTI-FAKE ACCOUNT PROTECTED)  -->
   <!-- ========================================================= -->
   <div id="authModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl">
@@ -157,12 +152,12 @@
         <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
       </div>
       <p class="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3">
-        ✨ Naya email dalne par aapka account apne-aap ban jayega aur turant <strong>10 FREE Tokens</strong> milenge!
+        ✨ Apna asli Email daalein (1 Device par 1 baar <strong>10 FREE Tokens</strong> milte hain). Payment ke waqt bhi yahi email use hoga!
       </p>
       <div class="space-y-3">
         <input id="auth_name" type="text" placeholder="Aapka Naam (e.g. Nirwan)"
           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
-        <input id="auth_email" type="email" placeholder="Email Address *"
+        <input id="auth_email" type="email" placeholder="Real Email Address *"
           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
         <input id="auth_pass" type="password" placeholder="Password (min 4 chars) *"
           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
@@ -175,13 +170,24 @@
   </div>
 
   <!-- ========================================================= -->
-  <!-- MODAL 2: CASHFREE TOKEN RECHARGE (₹1 = 5 TOKENS)          -->
+  <!-- MODAL 2: INSTANT CASHFREE RECHARGE (ZERO POPUP BLOCKER!)  -->
   <!-- ========================================================= -->
   <div id="rechargeModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-extrabold text-white">🪙 Recharge Tokens (₹1 = 5 🪙)</h2>
         <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <!-- Auto-Copied Registered Email Banner -->
+      <div class="bg-cyan-500/10 border border-cyan-500/30 rounded-xl p-3 flex items-center justify-between gap-2">
+        <div class="text-xs text-slate-300">
+          Payment page par yahi Email dalein:<br/>
+          <strong id="rechargeEmailDisplay" class="text-cyan-300 font-mono text-sm"></strong>
+        </div>
+        <button onclick="copyUserEmail()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold whitespace-nowrap">
+          📋 Copy Email
+        </button>
       </div>
 
       <!-- Quick Packs -->
@@ -204,36 +210,27 @@
         </button>
       </div>
 
-      <!-- Custom Amount Input -->
-      <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-1.5">
-        <label class="block text-xs text-slate-400 uppercase font-semibold">Ya Apne Hisab Se Amount Daalo (₹)</label>
-        <div class="flex items-center gap-3">
-          <input id="customInr" type="number" min="1" value="10" oninput="updateCustomTokenCalc()"
-            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-lg font-bold text-white focus:outline-none focus:border-cyan-400" />
-          <div class="text-right min-w-[120px]">
-            <div id="calcTokensText" class="text-lg font-extrabold text-amber-400">= 50 🪙</div>
-            <div class="text-[11px] text-slate-500">Rate: ₹1 = 5 Tokens</div>
-          </div>
-        </div>
-      </div>
+      <!-- Direct Anchor Pay Button (Never Blocked by Chrome Popup Blocker!) -->
+      <a id="payBtn" href="#" target="_blank" rel="noopener" onclick="startAutoPaymentWatcher()"
+        class="block text-center w-full py-3.5 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-400 hover:opacity-95 transition shadow-lg shadow-emerald-500/20">
+        💳 Proceed to UPI / QR Payment (Cashfree)
+      </a>
 
-      <!-- Main Pay Button -->
-      <button id="payBtn" onclick="payWithCashfree()"
-        class="w-full py-3.5 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-400 hover:opacity-95 transition shadow-lg shadow-emerald-500/20">
-        💳 Pay Instant via UPI / QR (Cashfree)
-      </button>
+      <p id="waitingWebhookNote" class="hidden text-center text-xs text-emerald-400 font-semibold animate-pulse">
+        ⏳ Payment complete hote hi aapke tokens yahan apne-aap jud jayenge...
+      </p>
 
-      <!-- Instant Order ID Claim Box (1-Second Direct Verification) -->
-      <div class="pt-3 border-t border-slate-800 space-y-2">
-        <label class="block text-[11px] text-slate-400">
-          Payment kar diya par tokens nahi dikhe? Receipt ka <strong class="text-amber-300">Order ID (CFPay_...)</strong> yahan daalo:
-        </label>
-        <div class="flex gap-2">
-          <input id="manualOrderId" type="text" placeholder="e.g. CFPay_uriNC_f114_1793335827528"
+      <!-- Hidden Backup Claim Box (Only shown if user clicks "Help") -->
+      <div class="pt-2 border-t border-slate-800/80 text-center">
+        <button onclick="toggleManualClaimBox()" class="text-[11px] text-slate-500 hover:text-slate-300 underline">
+          Payment kar diya par 1 min tak tokens nahi aaye? Yahan click karein
+        </button>
+        <div id="manualClaimSection" class="hidden mt-2.5 flex gap-2">
+          <input id="manualOrderId" type="text" placeholder="Paste Receipt Order ID (CFPay_...)"
             class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400" />
           <button id="claimBtn" onclick="claimByOrderId()"
             class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs whitespace-nowrap transition">
-            ⚡ Claim Tokens
+            ⚡ Verify Now
           </button>
         </div>
       </div>
@@ -242,17 +239,47 @@
   </div>
 
   <script>
-    // 👇👇 BHAI YAHAN APNA CASHFREE PAYMENT FORM LINK PASTE KARNA MAT BHOOLNA: 👇👇
-    const CF_PAYMENT_FORM_URL = "https://payments.cashfree.com/forms?code=uriNC";
+    // 👇👇 BHAI YAHAN APNA CASHFREE PAYMENT FORM LINK DAAL DENA: 👇👇
+    const CF_PAYMENT_FORM_URL = "https://payments.cashfree.com/forms/YOUR_FORM_LINK_HERE";
 
     let pollTimer = null;
     let balancePollTimer = null;
+    let prePaymentTokens = 0;
+
+    // Generate unique hardware/browser device fingerprint so nobody can farm 10 free tokens
+    function getDeviceFingerprint() {
+      let saved = localStorage.getItem("AKHAND_DEV_FP");
+      if (saved) return saved;
+      const raw = [
+        navigator.userAgent,
+        screen.width + "x" + screen.height,
+        screen.colorDepth,
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
+        navigator.language
+      ].join("|");
+      let hash = 0;
+      for (let i = 0; i < raw.length; i++) {
+        hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+        hash |= 0;
+      }
+      saved = "dev_" + Math.abs(hash).toString(16);
+      localStorage.setItem("AKHAND_DEV_FP", saved);
+      return saved;
+    }
 
     window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("payBtn").href = CF_PAYMENT_FORM_URL;
       updateButtonCost();
       const savedToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
       if (savedToken) {
         refreshUserProfile();
+      }
+    });
+
+    // Auto-check balance immediately whenever user switches back from Cashfree payment tab!
+    window.addEventListener("focus", () => {
+      if (localStorage.getItem("AKHAND_AUTH_TOKEN")) {
+        checkIfWebhookCreditedTokens();
       }
     });
 
@@ -264,22 +291,30 @@
 
     function openAuthModal() { document.getElementById("authModal").classList.remove("hidden"); }
     function closeAuthModal() { document.getElementById("authModal").classList.add("hidden"); }
-    function openRechargeModal() { document.getElementById("rechargeModal").classList.remove("hidden"); }
+
+    function openRechargeModal() {
+      const email = localStorage.getItem("AKHAND_USER_EMAIL") || "";
+      document.getElementById("rechargeEmailDisplay").innerText = email;
+      document.getElementById("payBtn").href = CF_PAYMENT_FORM_URL;
+      document.getElementById("rechargeModal").classList.remove("hidden");
+    }
+
     function closeRechargeModal() {
       document.getElementById("rechargeModal").classList.add("hidden");
-      const payBtn = document.getElementById("payBtn");
-      payBtn.disabled = false;
-      payBtn.innerText = "💳 Pay Instant via UPI / QR (Cashfree)";
+      document.getElementById("waitingWebhookNote").classList.add("hidden");
+    }
+
+    function toggleManualClaimBox() {
+      document.getElementById("manualClaimSection").classList.toggle("hidden");
+    }
+
+    function copyUserEmail() {
+      const email = localStorage.getItem("AKHAND_USER_EMAIL") || "";
+      navigator.clipboard?.writeText(email);
     }
 
     function setRechargeAmount(amt) {
-      document.getElementById("customInr").value = amt;
-      updateCustomTokenCalc();
-    }
-
-    function updateCustomTokenCalc() {
-      const amt = Math.max(1, Math.floor(Number(document.getElementById("customInr").value || 1)));
-      document.getElementById("calcTokensText").innerText = `= ${amt * 5} 🪙`;
+      copyUserEmail();
     }
 
     async function submitAuth() {
@@ -294,13 +329,18 @@
       }
 
       btn.disabled = true;
-      btn.innerText = "Checking Account...";
+      btn.innerText = "Verifying Account...";
 
       try {
         const res = await fetch("/.netlify/functions/api?action=auth", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password })
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+            device_id: getDeviceFingerprint()
+          })
         });
         const data = await res.json();
         if (!res.ok || data.error) throw new Error(data.error || "Login Failed");
@@ -352,62 +392,46 @@
     }
 
     // =========================================================
-    // 1. PAY VIA CASHFREE FORM + AUTO WEBHOOK POLLING
+    // 1. ZERO-BLOCKER PAYMENT WATCHER (AUTO-UPDATES ON RETURN)
     // =========================================================
-    async function payWithCashfree() {
-      const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
-      const userEmail = localStorage.getItem("AKHAND_USER_EMAIL") || "";
-      if (!authToken) {
-        closeRechargeModal();
-        openAuthModal();
-        return;
-      }
-
-      const oldTokens = Number(document.getElementById("tokenCount").innerText || 0);
-      const payBtn = document.getElementById("payBtn");
-
-      alert(`Dhyan rahe: Payment Form mein apna wahi Email (${userEmail}) daalna jisse yahan Sign-In kiya hai!`);
-      window.open(CF_PAYMENT_FORM_URL, "_blank");
-
-      payBtn.disabled = true;
-      payBtn.innerText = `⏳ Waiting for Payment (${userEmail})...`;
+    function startAutoPaymentWatcher() {
+      copyUserEmail(); // Automatically copies user's email so they can just paste it on Cashfree!
+      prePaymentTokens = Number(document.getElementById("tokenCount").innerText || 0);
+      document.getElementById("waitingWebhookNote").classList.remove("hidden");
 
       if (balancePollTimer) clearInterval(balancePollTimer);
-      balancePollTimer = setInterval(async () => {
-        try {
-          const res = await fetch(`/.netlify/functions/api?action=me&auth_token=${encodeURIComponent(authToken)}&t=${Date.now()}`);
-          if (res.ok) {
-            const data = await res.json();
-            if (Number(data.tokens) > oldTokens) {
-              clearInterval(balancePollTimer);
-              const added = Number(data.tokens) - oldTokens;
-              document.getElementById("tokenCount").innerText = data.tokens;
-              payBtn.disabled = false;
-              payBtn.innerText = "💳 Pay Instant via UPI / QR (Cashfree)";
-              closeRechargeModal();
-              alert(`🎉 Payment Successful! +${added} Tokens aapke wallet mein jud gaye!`);
-            }
+      balancePollTimer = setInterval(checkIfWebhookCreditedTokens, 3500);
+    }
+
+    async function checkIfWebhookCreditedTokens() {
+      const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
+      if (!authToken || !balancePollTimer) return;
+      try {
+        const res = await fetch(`/.netlify/functions/api?action=me&auth_token=${encodeURIComponent(authToken)}&t=${Date.now()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Number(data.tokens) > prePaymentTokens) {
+            clearInterval(balancePollTimer);
+            balancePollTimer = null;
+            const added = Number(data.tokens) - prePaymentTokens;
+            document.getElementById("tokenCount").innerText = data.tokens;
+            closeRechargeModal();
+            alert(`🎉 Payment Received Automatically! +${added} Tokens aapke wallet mein jud gaye!`);
           }
-        } catch (e) {
-          console.log("Polling wallet balance...", e);
         }
-      }, 4000);
+      } catch (e) {
+        console.log("Checking balance...", e);
+      }
     }
 
     // =========================================================
-    // 2. INSTANT CLAIM BY ORDER ID (e.g. CFPay_uriNC_...)
+    // 2. BACKUP MANUAL ORDER ID CLAIM
     // =========================================================
     async function claimByOrderId() {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
-      if (!authToken) {
-        closeRechargeModal();
-        openAuthModal();
-        return;
-      }
-
       const orderId = document.getElementById("manualOrderId").value.trim();
       if (!orderId) {
-        alert("Bhai receipt se Order ID (CFPay_...) copy karke daalo!");
+        alert("Receipt se Order ID (CFPay_...) copy karke daalo!");
         return;
       }
 
@@ -425,6 +449,7 @@
         if (!res.ok || data.error) throw new Error(data.error || "Order verification failed");
 
         if (balancePollTimer) clearInterval(balancePollTimer);
+        balancePollTimer = null;
         document.getElementById("tokenCount").innerText = data.tokens;
         document.getElementById("manualOrderId").value = "";
         closeRechargeModal();
@@ -433,7 +458,7 @@
         alert("Claim Alert: " + err.message);
       } finally {
         claimBtn.disabled = false;
-        claimBtn.innerText = "⚡ Claim Tokens";
+        claimBtn.innerText = "⚡ Verify Now";
       }
     }
 
