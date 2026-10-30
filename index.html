@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Akhand AI E-Book Studio 24/7</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Official Cashfree V3 Checkout SDK -->
-  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-cyan-500 selection:text-slate-950">
 
@@ -180,7 +178,7 @@
   <!-- MODAL 2: CASHFREE TOKEN RECHARGE (₹1 = 5 TOKENS)          -->
   <!-- ========================================================= -->
   <div id="rechargeModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-extrabold text-white">🪙 Recharge Tokens (₹1 = 5 🪙)</h2>
         <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
@@ -207,11 +205,11 @@
       </div>
 
       <!-- Custom Amount Input -->
-      <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2">
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 space-y-1.5">
         <label class="block text-xs text-slate-400 uppercase font-semibold">Ya Apne Hisab Se Amount Daalo (₹)</label>
         <div class="flex items-center gap-3">
           <input id="customInr" type="number" min="1" value="10" oninput="updateCustomTokenCalc()"
-            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-lg font-bold text-white focus:outline-none focus:border-cyan-400" />
+            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-lg font-bold text-white focus:outline-none focus:border-cyan-400" />
           <div class="text-right min-w-[120px]">
             <div id="calcTokensText" class="text-lg font-extrabold text-amber-400">= 50 🪙</div>
             <div class="text-[11px] text-slate-500">Rate: ₹1 = 5 Tokens</div>
@@ -219,17 +217,37 @@
         </div>
       </div>
 
+      <!-- Main Pay Button -->
       <button id="payBtn" onclick="payWithCashfree()"
         class="w-full py-3.5 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-400 hover:opacity-95 transition shadow-lg shadow-emerald-500/20">
         💳 Pay Instant via UPI / QR (Cashfree)
       </button>
+
+      <!-- Instant Order ID Claim Box (1-Second Direct Verification) -->
+      <div class="pt-3 border-t border-slate-800 space-y-2">
+        <label class="block text-[11px] text-slate-400">
+          Payment kar diya par tokens nahi dikhe? Receipt ka <strong class="text-amber-300">Order ID (CFPay_...)</strong> yahan daalo:
+        </label>
+        <div class="flex gap-2">
+          <input id="manualOrderId" type="text" placeholder="e.g. CFPay_uriNC_f114_1793335827528"
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400" />
+          <button id="claimBtn" onclick="claimByOrderId()"
+            class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs whitespace-nowrap transition">
+            ⚡ Claim Tokens
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script>
-    let pollTimer = null;
+    // 👇👇 BHAI YAHAN APNA CASHFREE PAYMENT FORM LINK PASTE KARNA MAT BHOOLNA: 👇👇
+    const CF_PAYMENT_FORM_URL = "https://payments.cashfree.com/forms?code=uriNC";
 
-    // Load User on Page Startup
+    let pollTimer = null;
+    let balancePollTimer = null;
+
     window.addEventListener("DOMContentLoaded", () => {
       updateButtonCost();
       const savedToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
@@ -247,7 +265,12 @@
     function openAuthModal() { document.getElementById("authModal").classList.remove("hidden"); }
     function closeAuthModal() { document.getElementById("authModal").classList.add("hidden"); }
     function openRechargeModal() { document.getElementById("rechargeModal").classList.remove("hidden"); }
-    function closeRechargeModal() { document.getElementById("rechargeModal").classList.add("hidden"); }
+    function closeRechargeModal() {
+      document.getElementById("rechargeModal").classList.add("hidden");
+      const payBtn = document.getElementById("payBtn");
+      payBtn.disabled = false;
+      payBtn.innerText = "💳 Pay Instant via UPI / QR (Cashfree)";
+    }
 
     function setRechargeAmount(amt) {
       document.getElementById("customInr").value = amt;
@@ -303,7 +326,7 @@
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
       if (!authToken) return;
       try {
-        const res = await fetch(`/.netlify/functions/api?action=me&auth_token=${encodeURIComponent(authToken)}`);
+        const res = await fetch(`/.netlify/functions/api?action=me&auth_token=${encodeURIComponent(authToken)}&t=${Date.now()}`);
         if (!res.ok) {
           logoutUser();
           return;
@@ -329,12 +352,8 @@
     }
 
     // =========================================================
-    // CASHFREE V3 INSTANT CHECKOUT FLOW
-        // 👇 Yahan apna Cashfree Dashboard -> Payment Forms wala link paste karo:
-    const CF_PAYMENT_FORM_URL = "https://payments.cashfree.com/forms?code=uriNC";
-
-    let balancePollTimer = null;
-
+    // 1. PAY VIA CASHFREE FORM + AUTO WEBHOOK POLLING
+    // =========================================================
     async function payWithCashfree() {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
       const userEmail = localStorage.getItem("AKHAND_USER_EMAIL") || "";
@@ -347,18 +366,16 @@
       const oldTokens = Number(document.getElementById("tokenCount").innerText || 0);
       const payBtn = document.getElementById("payBtn");
 
-      alert(`Dhyan rahe: Payment Form mein apna wahi Email (${userEmail}) daalna jisse yahan Sign-In kiya hai, taaki payment hote hi tokens turant aapke account mein jud jayein!`);
-
-      // Open Cashfree Hosted Payment Form in new tab
+      alert(`Dhyan rahe: Payment Form mein apna wahi Email (${userEmail}) daalna jisse yahan Sign-In kiya hai!`);
       window.open(CF_PAYMENT_FORM_URL, "_blank");
 
       payBtn.disabled = true;
-      payBtn.innerText = "⏳ Checking Payment Status Automatically...";
+      payBtn.innerText = `⏳ Waiting for Payment (${userEmail})...`;
 
       if (balancePollTimer) clearInterval(balancePollTimer);
       balancePollTimer = setInterval(async () => {
         try {
-          const res = await fetch(`/.netlify/functions/api?action=me&auth_token=${encodeURIComponent(authToken)}`);
+          const res = await fetch(`/.netlify/functions/api?action=me&auth_token=${encodeURIComponent(authToken)}&t=${Date.now()}`);
           if (res.ok) {
             const data = await res.json();
             if (Number(data.tokens) > oldTokens) {
@@ -377,9 +394,51 @@
       }, 4000);
     }
 
+    // =========================================================
+    // 2. INSTANT CLAIM BY ORDER ID (e.g. CFPay_uriNC_...)
+    // =========================================================
+    async function claimByOrderId() {
+      const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
+      if (!authToken) {
+        closeRechargeModal();
+        openAuthModal();
+        return;
+      }
+
+      const orderId = document.getElementById("manualOrderId").value.trim();
+      if (!orderId) {
+        alert("Bhai receipt se Order ID (CFPay_...) copy karke daalo!");
+        return;
+      }
+
+      const claimBtn = document.getElementById("claimBtn");
+      claimBtn.disabled = true;
+      claimBtn.innerText = "Checking...";
+
+      try {
+        const res = await fetch("/.netlify/functions/api?action=claim_order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ auth_token: authToken, order_id: orderId })
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || "Order verification failed");
+
+        if (balancePollTimer) clearInterval(balancePollTimer);
+        document.getElementById("tokenCount").innerText = data.tokens;
+        document.getElementById("manualOrderId").value = "";
+        closeRechargeModal();
+        alert(data.message);
+      } catch (err) {
+        alert("Claim Alert: " + err.message);
+      } finally {
+        claimBtn.disabled = false;
+        claimBtn.innerText = "⚡ Claim Tokens";
+      }
+    }
 
     // =========================================================
-    // START E-BOOK GENERATION (VERIFIES & DEDUCTS TOKENS)
+    // 3. START E-BOOK GENERATION
     // =========================================================
     async function startGeneration() {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
@@ -445,7 +504,7 @@
 
     async function checkStatus(jobId) {
       try {
-        const res = await fetch(`/.netlify/functions/api?action=status&job_id=${jobId}`);
+        const res = await fetch(`/.netlify/functions/api?action=status&job_id=${jobId}&t=${Date.now()}`);
         const data = await res.json();
         updateUI(data.progress || 5, data.message || "Processing...");
 
