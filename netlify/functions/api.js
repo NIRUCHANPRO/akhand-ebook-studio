@@ -6,6 +6,7 @@ exports.handler = async (event) => {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, x-webhook-signature, x-webhook-timestamp",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Cache-Control": "no-store, no-cache, must-revalidate",
     "Content-Type": "application/json"
   };
 
@@ -15,6 +16,13 @@ exports.handler = async (event) => {
 
   const GH_PAT = (process.env.GH_PAT || "").trim();
   const GH_REPO = (process.env.GH_REPO || "").trim();
+  const CF_APP_ID = (process.env.CASHFREE_APP_ID || "").trim();
+  const CF_SECRET = (process.env.CASHFREE_SECRET_KEY || "").trim();
+  const CF_ENV = (process.env.CASHFREE_ENV || "PRODUCTION").trim().toUpperCase();
+
+  const CF_BASE_URL = CF_ENV === "SANDBOX"
+    ? "https://sandbox.cashfree.com/pg"
+    : "https://api.cashfree.com/pg";
 
   if (!GH_PAT || !GH_REPO) {
     return {
@@ -30,9 +38,8 @@ exports.handler = async (event) => {
     "Content-Type": "application/json"
   };
 
-  // --- HELPER: Read & Write JSON in GitHub Repo ---
   async function readGhJson(filePath) {
-    const url = `https://api.github.com/repos/${GH_REPO}/contents/${filePath}`;
+    const url = `https://api.github.com/repos/${GH_REPO}/contents/${filePath}?t=${Date.now()}`;
     const r = await fetch(url, { headers: ghHeaders });
     if (r.status === 404) return { data: null, sha: null };
     if (!r.ok) throw new Error(`GitHub Read Error (${r.status})`);
@@ -74,7 +81,23 @@ exports.handler = async (event) => {
     return sig === expectedSig ? email : null;
   }
 
-  // Safe Body Parser (Supports both JSON & Form-UrlEncoded from Cashfree Webhooks)
+  // Deep scanner to find email & amount anywhere inside Cashfree Payment Form JSON
+  function findEmailInObject(obj) {
+    if (!obj) return "";
+    if (typeof obj === "string") {
+      const s = obj.trim();
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)) return s.toLowerCase();
+      return "";
+    }
+    if (typeof obj === "object") {
+      for (const k of Object.keys(obj)) {
+        const found = findEmailInObject(obj[k]);
+        if (found) return found;
+      }
+    }
+    return "";
+  }
+
   let body = {};
   if (event.body) {
     const rawBody = event.isBase64Encoded
@@ -111,13 +134,7 @@ exports.handler = async (event) => {
       const passHash = hashStr(password + GH_PAT);
 
       if (!existingUser) {
-        const newUser = {
-          email,
-          name,
-          passHash,
-          tokens: 10,
-          created_at: Date.now()
-        };
+        const newUser = { email, name, passHash, tokens: 10, created_at: Date.now() };
         await writeGhJson(userFile, newUser, `New user signup: ${email}`);
         return {
           statusCode: 200,
@@ -151,7 +168,7 @@ exports.handler = async (event) => {
     }
 
     // =========================================================
-    // 2. GET CURRENT USER PROFILE & TOKEN BALANCE
+    // 2. GET CURRENT USER PROFILE & LIVE TOKEN BALANCE
     // =========================================================
     if (action === "me") {
       const email = verifyAuthToken(event.headers.authorization || event.queryStringParameters?.auth_token);
@@ -169,7 +186,73 @@ exports.handler = async (event) => {
     }
 
     // =========================================================
-    // 3. DEDUCT TOKENS & START E-BOOK GENERATION ON GITHUB
+    // 3. INSTANT CLAIM BY CASHFREE ORDER ID (e.g. CFPay_...)
+    // =========================================================
+    if (action === "claim_order" && event.httpMethod === "POST") {
+      const email = verifyAuthToken(body.auth_token);
+      const orderId = (body.order_id || "").trim();
+      if (!email || !orderId) {
+        return { statusCode: 400, headers, body: JSON.stringify({ error: "Apna Cashfree Order ID (CFPay_...) daalo!" }) };
+      }
+
+      const safeOrderKey = orderId.replace(/[^a-zA-Z0-9_-]/g, "");
+      const orderFile = `db/orders/${safeOrderKey}.json`;
+      const { data: existingOrder } = await readGhJson(orderFile);
+      if (existingOrder) {
+        return { statusCode: 400, headers, body: JSON.stringify({ error: "Yeh Order ID pehle hi claim ho chuka hai!" }) };
+      }
+
+      const cfRes = await fetch(`${CF_BASE_URL}/orders/${encodeURIComponent(orderId)}`, {
+        method: "GET",
+        headers: {
+          "x-client-id": CF_APP_ID,
+          "x-client-secret": CF_SECRET,
+          "x-api-version": "2023-08-01",
+          "Accept": "application/json"
+        }
+      });
+      const cfData = await cfRes.json();
+
+      if (!cfRes.ok || (cfData.order_status || "").toUpperCase() !== "PAID") {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: `Order verify nahi hua (Status: ${cfData.order_status || cfData.message || "NOT FOUND"})` })
+        };
+      }
+
+      const paidAmount = Math.max(1, Math.floor(Number(cfData.order_amount || 1)));
+      const tokensEarned = paidAmount * 5; // ₹1 = 5 Tokens
+
+      const userFile = `db/users/${hashStr(email).slice(0, 20)}.json`;
+      const { data: user, sha: userSha } = await readGhJson(userFile);
+      if (!user) throw new Error("User account missing!");
+
+      user.tokens = (Number(user.tokens) || 0) + tokensEarned;
+      await writeGhJson(userFile, user, `Claimed ${tokensEarned} tokens via Order ${orderId}`, userSha);
+      await writeGhJson(orderFile, {
+        order_id: orderId,
+        email,
+        amount_inr: paidAmount,
+        tokens_added: tokensEarned,
+        new_balance: user.tokens,
+        paid_at: Date.now()
+      }, `Order ${orderId} claimed`);
+
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          success: true,
+          tokens_added: tokensEarned,
+          tokens: user.tokens,
+          message: `🎉 Verified! +${tokensEarned} Tokens aapke wallet mein jud gaye!`
+        })
+      };
+    }
+
+    // =========================================================
+    // 4. DEDUCT TOKENS & START E-BOOK GENERATION ON GITHUB
     // =========================================================
     if (action === "start" && event.httpMethod === "POST") {
       const email = verifyAuthToken(body.auth_token);
@@ -188,7 +271,7 @@ exports.handler = async (event) => {
           statusCode: 402,
           headers,
           body: JSON.stringify({
-            error: `Insufficient Tokens! Is book ke liye ${tokenCost} Tokens chahiye, par aapke paas ${user ? user.tokens : 0} Tokens hain. Upar '+ Buy Tokens (₹1 = 5 Tokens)' se recharge karo!`,
+            error: `Insufficient Tokens! Is book ke liye ${tokenCost} Tokens chahiye, par aapke paas ${user ? user.tokens : 0} Tokens hain.`,
             need_recharge: true
           })
         };
@@ -234,7 +317,7 @@ exports.handler = async (event) => {
     }
 
     // =========================================================
-    // 4. POLL LIVE E-BOOK PROGRESS STATUS
+    // 5. POLL LIVE E-BOOK PROGRESS STATUS
     // =========================================================
     if (action === "status" && event.queryStringParameters?.job_id) {
       const jobId = event.queryStringParameters.job_id;
@@ -250,49 +333,64 @@ exports.handler = async (event) => {
     }
 
     // =========================================================
-    // 5. CASHFREE WEBHOOK & "TEST & ADD" AUTO-HANDLER (ALWAYS 200 OK!)
-    // Works for Payment Forms, Payment Links, AND Test Pings!
+    // 6. CASHFREE PAYMENT FORM & ORDER WEBHOOK HANDLER (FIXED!)
+    // Fixed: Reads wfData.order AND wfData.form separately without shadowing!
     // =========================================================
     const wfData = body.data || body || {};
-    const formObj = wfData.form || wfData.order || wfData;
+    const orderObj = wfData.order || {};
+    const formObj = wfData.form || {};
     const paymentObj = wfData.payment || {};
-    const custObj = wfData.customer_details || formObj.customer_details || {};
+    const custObj =
+      wfData.customer_details ||
+      orderObj.customer_details ||
+      formObj.customer_details ||
+      body.customer_details ||
+      {};
 
     const rawStatus = String(
       paymentObj.payment_status ||
+      orderObj.order_status ||
       formObj.order_status ||
+      wfData.order_status ||
       wfData.txStatus ||
       body.order_status ||
       "SUCCESS"
     ).toUpperCase();
 
-    const rawEmail = String(
+    const rawEmail = (
       custObj.customer_email ||
+      orderObj.customer_email ||
       formObj.customer_email ||
+      wfData.customer_email ||
       wfData.customerEmail ||
-      body.customer_email ||
+      findEmailInObject(body) ||
       ""
     ).trim().toLowerCase();
 
     const rawAmount = Math.floor(Number(
       paymentObj.payment_amount ||
+      orderObj.order_amount ||
+      orderObj.transaction_amount ||
       formObj.order_amount ||
-      formObj.link_amount ||
+      formObj.cf_amount ||
+      wfData.order_amount ||
       wfData.orderAmount ||
       body.order_amount ||
+      body.amount ||
       0
     ));
 
-    const txId = String(
+    const rawTxId = String(
+      orderObj.order_id ||
       paymentObj.cf_payment_id ||
       formObj.order_id ||
-      formObj.cf_form_id ||
+      wfData.order_id ||
       wfData.referenceId ||
       `tx_${Date.now()}`
-    );
+    ).replace(/[^a-zA-Z0-9_-]/g, "");
 
     if ((rawStatus === "SUCCESS" || rawStatus === "PAID") && rawEmail.includes("@") && rawAmount >= 1) {
-      const orderFile = `db/orders/${txId}.json`;
+      const orderFile = `db/orders/${rawTxId}.json`;
       const { data: existingOrder } = await readGhJson(orderFile);
 
       if (!existingOrder) {
@@ -304,18 +402,17 @@ exports.handler = async (event) => {
           user.tokens = (Number(user.tokens) || 0) + tokensEarned;
           await writeGhJson(userFile, user, `Webhook credited ${tokensEarned} tokens to ${rawEmail}`, userSha);
           await writeGhJson(orderFile, {
-            order_id: txId,
+            order_id: rawTxId,
             email: rawEmail,
             amount_inr: rawAmount,
             tokens_added: tokensEarned,
             new_balance: user.tokens,
             paid_at: Date.now()
-          }, `Webhook order ${txId}`);
+          }, `Webhook order ${rawTxId}`);
         }
       }
     }
 
-    // Always return 200 OK so Cashfree's "Test & Add" verification succeeds immediately!
     return {
       statusCode: 200,
       headers,
@@ -323,7 +420,6 @@ exports.handler = async (event) => {
     };
 
   } catch (err) {
-    // Even if test payload has weird dummy fields, return 200 so Cashfree accepts the webhook URL
     return {
       statusCode: 200,
       headers,
