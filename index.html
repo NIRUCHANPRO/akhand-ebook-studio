@@ -652,5 +652,19 @@
       document.getElementById("statusText").innerText = msg;
     }
   </script>
+  <!-- SANDBOXED FLOATING SOCIAL BAR (ZERO AUTO-REDIRECT) -->
+  <div id="safeSocialBar" class="fixed bottom-3 right-3 z-40 bg-slate-900/95 border border-slate-700 rounded-2xl shadow-2xl p-1.5 flex flex-col items-end">
+    <button onclick="document.getElementById('safeSocialBar').remove()" class="text-[10px] text-slate-400 hover:text-white px-1.5 pb-0.5">
+      ✕ Close Ad
+    </button>
+    <iframe
+      sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+      scrolling="no"
+      frameborder="0"
+      style="width: 310px; height: 95px; border: none; overflow: hidden; border-radius: 10px;"
+      srcdoc="<!DOCTYPE html><html><body style='margin:0;padding:0;background:transparent;overflow:hidden;'><script type='text/javascript' data-cfasync='false' src='https://bauval.org/14/9d470b26c91b51ad563bd96f5b492123'></script></body></html>">
+    </iframe>
+  </div>
+
 </body>
 </html>
