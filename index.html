@@ -372,6 +372,8 @@
       copyUserEmail();
     }
 
+        let lastAdRewardTime = 0;
+
     function handleSmartlinkAdClick(event, btnId) {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
       if (!authToken) {
@@ -380,6 +382,106 @@
         openAuthModal();
         return false;
       }
+
+      if (adCountdownInProgress) {
+        event.preventDefault();
+        alert("Bhai abhi Ad verification chal raha hai!");
+        return false;
+      }
+
+      const now = Date.now();
+      const cooldownLeft = Math.ceil((30000 - (now - lastAdRewardTime)) / 1000);
+      if (cooldownLeft > 0) {
+        event.preventDefault();
+        alert(`⏳ Agla Free Token Ad ${cooldownLeft} second baad dekh sakte ho!`);
+        return false;
+      }
+
+      adCountdownInProgress = true;
+      const btn = document.getElementById(btnId);
+      const originalText = btn.innerText;
+      const startTime = Date.now();
+      let leftMainPage = false;
+      let finished = false;
+
+      btn.innerText = "⏳ Ad Page Par 15s Rukein...";
+
+      const onVisibilityChange = () => {
+        if (document.hidden) {
+          leftMainPage = true;
+        } else if (leftMainPage && !finished) {
+          checkAdCompletion();
+        }
+      };
+
+      document.addEventListener("visibilitychange", onVisibilityChange);
+      window.addEventListener("blur", () => { leftMainPage = true; }, { once: true });
+
+      const timer = setInterval(() => {
+        if (document.hidden || !document.hasFocus()) {
+          leftMainPage = true;
+        }
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const secLeft = Math.max(0, 15 - elapsed);
+
+        if (secLeft > 0) {
+          btn.innerText = `⏳ Watching Ad (${secLeft}s)...`;
+          // Agar 2.5 sec baad bhi user main page par hi hai (turant Back daba diya)
+          if (elapsed >= 2 && !document.hidden && document.hasFocus()) {
+            cancelAdEarly(elapsed);
+          }
+        } else {
+          checkAdCompletion();
+        }
+      }, 500);
+
+      function cancelAdEarly(secSpent) {
+        if (finished) return;
+        finished = true;
+        clearInterval(timer);
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+        adCountdownInProgress = false;
+        btn.innerText = originalText;
+        alert(`❌ Ad Adhura Chhod Diya! Aap sirf ${secSpent} second mein Back aa gaye. +1 Free Token ke liye Ad page par poore 15 second rukna zaroori hai!`);
+      }
+
+      async function checkAdCompletion() {
+        if (finished) return;
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+
+        if (elapsed < 15) {
+          cancelAdEarly(elapsed);
+          return;
+        }
+
+        finished = true;
+        clearInterval(timer);
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+        btn.innerText = "⚡ Crediting +1 Token...";
+
+        try {
+          const res = await fetch("/.netlify/functions/api?action=reward_ad", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ auth_token: authToken })
+          });
+          const data = await res.json();
+          if (!res.ok || data.error) throw new Error(data.error || "Ad verification failed");
+
+          lastAdRewardTime = Date.now();
+          document.getElementById("tokenCount").innerText = data.tokens;
+          alert(data.message);
+        } catch (err) {
+          alert("Ad Reward Info: " + err.message);
+        } finally {
+          adCountdownInProgress = false;
+          btn.innerText = originalText;
+        }
+      }
+
+      return true;
+    }
+
 
       if (adCountdownInProgress) {
         event.preventDefault();
