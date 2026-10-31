@@ -122,7 +122,7 @@
           class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-cyan-400"></textarea>
       </div>
 
-      <!-- Main Generate + Optional Watch Ad Button (Zero Auto-Popup!) -->
+      <!-- Main Generate + Rewarded Smartlink Ad Button -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         <button id="genBtn" onclick="startGeneration()"
           class="md:col-span-2 w-full py-4 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 transition shadow-lg shadow-cyan-500/20">
@@ -149,6 +149,17 @@
           class="hidden block text-center w-full py-4 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition shadow-lg shadow-emerald-600/30">
           📥 Download Your Completed E-Book (PDF)
         </a>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- ADSTERRA NATIVE BANNER SLOT (CLEAN HIGH-CTR CARDS)        -->
+      <!-- ========================================================= -->
+      <div class="pt-4 border-t border-slate-800/80">
+        <div class="text-[10px] uppercase tracking-widest text-slate-500 text-center mb-2">Sponsored Recommendations</div>
+        <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 overflow-hidden">
+          <script async="async" data-cfasync="false" src="https://bauval.org/21/afe85bc1c98050988ffa3670a2ae603a"></script>
+          <div id="container-afe85bc1c98050988ffa3670a2ae603a"></div>
+        </div>
       </div>
 
     </div>
@@ -191,7 +202,7 @@
         <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
       </div>
 
-      <!-- FREE SMARTLINK AD REWARD BUTTON (ONLY OPENS WHEN CLICKED) -->
+      <!-- FREE SMARTLINK AD REWARD BUTTON -->
       <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-3.5 space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold text-purple-300 uppercase tracking-wider">🎁 Option 1: Free Sponsored Reward</span>
@@ -341,9 +352,6 @@
       copyUserEmail();
     }
 
-    // =========================================================
-    // SMARTLINK AD WATCH HANDLER (ONLY RUNS ON BUTTON CLICK!)
-    // =========================================================
     function handleSmartlinkAdClick(event, btnId) {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
       if (!authToken) {
@@ -624,5 +632,11 @@
       document.getElementById("statusText").innerText = msg;
     }
   </script>
+
+  <!-- ========================================================= -->
+  <!-- ADSTERRA SOCIAL BAR SCRIPT (FLOATING NOTIFICATION WIDGET) -->
+  <!-- ========================================================= -->
+  <script data-cfasync="false" src="https://bauval.org/14/9d470b26c91b51ad563bd96f5b492123"></script>
+
 </body>
 </html>
