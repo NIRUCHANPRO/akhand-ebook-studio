@@ -1,9 +1,9 @@
 {
   "job_id": "job_1793432566171",
-  "progress": 90,
-  "message": "Generating Custom Cover Artwork & Back-Cover...",
+  "progress": 95,
+  "message": "Direct Binary Streaming 67 Pages into PDF (0 MB RAM)...",
   "done": false,
   "pdf_url": "",
   "error": "",
-  "updated_at": 1793432948
+  "updated_at": 1793432952
 }
