@@ -35,7 +35,7 @@
         </div>
         <button onclick="openRechargeModal()"
           class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs md:text-sm transition shadow-lg shadow-emerald-500/20">
-          + Buy Tokens (₹1 = 5 🪙)
+          + Get Tokens (₹1 or Watch Ad)
         </button>
         <button onclick="logoutUser()" class="text-xs text-slate-500 hover:text-rose-400 px-2">Logout</button>
       </div>
@@ -52,7 +52,7 @@
         Create 1,000+ Page Kindle E-Books
       </h1>
       <p class="text-slate-400 mt-2 text-sm md:text-base">
-        Naye user ko <strong class="text-amber-400">10 Tokens FREE!</strong> Uske baad sirf <strong class="text-emerald-400">₹1 mein 5 Tokens</strong> instant recharge.
+        Naye user ko <strong class="text-amber-400">10 Tokens FREE!</strong> Uske baad <strong class="text-emerald-400">₹1 mein 5 Tokens</strong> lo ya <strong class="text-purple-400">15s Ad dekh kar Free Token</strong> kamao!
       </p>
     </div>
 
@@ -119,10 +119,19 @@
           class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-cyan-400"></textarea>
       </div>
 
-      <button id="genBtn" onclick="startGeneration()"
-        class="w-full py-4 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 transition shadow-lg shadow-cyan-500/20">
-        🚀 Generate High-Res E-Book PDF (Cost: 5 🪙 Tokens)
-      </button>
+      <!-- Main Generate + Quick Watch Ad Bar -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <button id="genBtn" onclick="startGeneration()"
+          class="md:col-span-2 w-full py-4 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 transition shadow-lg shadow-cyan-500/20">
+          🚀 Generate High-Res E-Book PDF (Cost: 5 🪙 Tokens)
+        </button>
+
+        <a id="mainWatchAdBtn" href="https://araplhn.org/4/917d3c50c18e93fbac36e0b876200f4f" target="_blank" rel="noopener"
+          onclick="return handleSmartlinkAdClick(event, 'mainWatchAdBtn')"
+          class="w-full py-4 px-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 transition shadow-lg shadow-purple-600/20 flex items-center justify-center text-xs md:text-sm text-center">
+          🎬 Watch 15s Ad (+1 🪙 FREE)
+        </a>
+      </div>
 
       <!-- Live Progress Box -->
       <div id="progressBox" class="hidden pt-4 border-t border-slate-800 space-y-4">
@@ -140,7 +149,7 @@
       </div>
 
       <!-- ========================================================= -->
-      <!-- 300x250 BANNER AD SLOT (ALWAYS VISIBLE FOR MAX EARNINGS)  -->
+      <!-- 300x250 BANNER AD SLOT                                    -->
       <!-- ========================================================= -->
       <div class="pt-4 border-t border-slate-800/80 flex flex-col items-center justify-center">
         <span class="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Sponsored Advertisement</span>
@@ -189,20 +198,33 @@
   </div>
 
   <!-- ========================================================= -->
-  <!-- MODAL 2: INSTANT CASHFREE RECHARGE (ZERO POPUP BLOCKER!)  -->
+  <!-- MODAL 2: CASHFREE RECHARGE + WATCH AD FOR FREE TOKEN      -->
   <!-- ========================================================= -->
   <div id="rechargeModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center">
-        <h2 class="text-xl font-extrabold text-white">🪙 Recharge Tokens (₹1 = 5 🪙)</h2>
+        <h2 class="text-xl font-extrabold text-white">🪙 Get Studio Tokens</h2>
         <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <!-- FREE SMARTLINK AD REWARD BUTTON -->
+      <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-3.5 space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold text-purple-300 uppercase tracking-wider">🎁 Option 1: Free Sponsored Reward</span>
+          <span class="text-xs font-extrabold text-amber-400">+1 Token / Ad</span>
+        </div>
+        <a id="modalWatchAdBtn" href="https://araplhn.org/4/917d3c50c18e93fbac36e0b876200f4f" target="_blank" rel="noopener"
+          onclick="return handleSmartlinkAdClick(event, 'modalWatchAdBtn')"
+          class="block text-center w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 transition shadow-lg shadow-purple-600/20 text-sm">
+          🎬 Watch 15s Sponsor Ad (+1 FREE Token)
+        </a>
       </div>
 
       <!-- Auto-Copied Registered Email Banner -->
       <div class="bg-cyan-500/10 border border-cyan-500/30 rounded-xl p-3 flex items-center justify-between gap-2">
         <div class="text-xs text-slate-300">
-          Payment page par yahi Email dalein:<br/>
-          <strong id="rechargeEmailDisplay" class="text-cyan-300 font-mono text-sm"></strong>
+          ⚡ <strong>Option 2: Instant UPI (₹1 = 5 Tokens)</strong><br/>
+          Payment Email: <strong id="rechargeEmailDisplay" class="text-cyan-300 font-mono"></strong>
         </div>
         <button onclick="copyUserEmail()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold whitespace-nowrap">
           📋 Copy Email
@@ -210,26 +232,26 @@
       </div>
 
       <!-- Quick Packs -->
-      <div class="grid grid-cols-2 gap-3">
-        <button onclick="setRechargeAmount(1)" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
-          <div class="text-lg font-extrabold text-cyan-400">₹1</div>
+      <div class="grid grid-cols-2 gap-2.5">
+        <button onclick="setRechargeAmount(1)" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
+          <div class="text-base font-extrabold text-cyan-400">₹1</div>
           <div class="text-xs text-slate-300 font-semibold">5 Tokens 🪙</div>
         </button>
-        <button onclick="setRechargeAmount(5)" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
-          <div class="text-lg font-extrabold text-cyan-400">₹5</div>
+        <button onclick="setRechargeAmount(5)" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
+          <div class="text-base font-extrabold text-cyan-400">₹5</div>
           <div class="text-xs text-slate-300 font-semibold">25 Tokens 🪙</div>
         </button>
-        <button onclick="setRechargeAmount(10)" class="p-3 rounded-xl bg-slate-950 border border-cyan-500/50 hover:border-cyan-400 text-left transition">
-          <div class="text-lg font-extrabold text-amber-400">₹10 (Popular)</div>
+        <button onclick="setRechargeAmount(10)" class="p-2.5 rounded-xl bg-slate-950 border border-cyan-500/50 hover:border-cyan-400 text-left transition">
+          <div class="text-base font-extrabold text-amber-400">₹10 (Popular)</div>
           <div class="text-xs text-slate-300 font-semibold">50 Tokens 🪙</div>
         </button>
-        <button onclick="setRechargeAmount(25)" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
-          <div class="text-lg font-extrabold text-emerald-400">₹25 (Mega Pack)</div>
+        <button onclick="setRechargeAmount(25)" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
+          <div class="text-base font-extrabold text-emerald-400">₹25 (Mega Pack)</div>
           <div class="text-xs text-slate-300 font-semibold">125 Tokens 🪙</div>
         </button>
       </div>
 
-      <!-- Direct Anchor Pay Button (Never Blocked by Chrome Popup Blocker!) -->
+      <!-- Direct Anchor Pay Button -->
       <a id="payBtn" href="#" target="_blank" rel="noopener" onclick="startAutoPaymentWatcher()"
         class="block text-center w-full py-3.5 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-400 hover:opacity-95 transition shadow-lg shadow-emerald-500/20">
         💳 Proceed to UPI / QR Payment (Cashfree)
@@ -239,7 +261,7 @@
         ⏳ Payment complete hote hi aapke tokens yahan apne-aap jud jayenge...
       </p>
 
-      <!-- Hidden Backup Claim Box (Only shown if user clicks "Help") -->
+      <!-- Hidden Backup Claim Box -->
       <div class="pt-2 border-t border-slate-800/80 text-center">
         <button onclick="toggleManualClaimBox()" class="text-[11px] text-slate-500 hover:text-slate-300 underline">
           Payment kar diya par 1 min tak tokens nahi aaye? Yahan click karein
@@ -259,11 +281,15 @@
 
   <script>
     // 👇👇 BHAI YAHAN APNA CASHFREE PAYMENT FORM LINK DAAL DENA: 👇👇
-    const CF_PAYMENT_FORM_URL = "https://payments.cashfree.com/forms?code=uriNC";
+    const CF_PAYMENT_FORM_URL = "https://payments.cashfree.com/forms/YOUR_FORM_LINK_HERE";
+
+    // Tumhara Smartlink URL pehle se set hai:
+    const SMARTLINK_AD_URL = "https://araplhn.org/4/917d3c50c18e93fbac36e0b876200f4f";
 
     let pollTimer = null;
     let balancePollTimer = null;
     let prePaymentTokens = 0;
+    let adCountdownInProgress = false;
 
     function getDeviceFingerprint() {
       let saved = localStorage.getItem("AKHAND_DEV_FP");
@@ -332,6 +358,60 @@
 
     function setRechargeAmount(amt) {
       copyUserEmail();
+    }
+
+    // =========================================================
+    // SMARTLINK AD WATCH HANDLER (15s TIMER -> +1 FREE TOKEN)
+    // =========================================================
+    function handleSmartlinkAdClick(event, btnId) {
+      const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
+      if (!authToken) {
+        event.preventDefault();
+        closeRechargeModal();
+        openAuthModal();
+        return false;
+      }
+
+      if (adCountdownInProgress) {
+        event.preventDefault();
+        alert("Bhai abhi pichle Ad ka 15-second verification chal raha hai!");
+        return false;
+      }
+
+      adCountdownInProgress = true;
+      const btn = document.getElementById(btnId);
+      const originalText = btn.innerText;
+      let secLeft = 15;
+
+      const timer = setInterval(async () => {
+        secLeft--;
+        if (secLeft > 0) {
+          btn.innerText = `⏳ Watching Ad (${secLeft}s)...`;
+        } else {
+          clearInterval(timer);
+          btn.innerText = "⚡ Crediting +1 Token...";
+          try {
+            const res = await fetch("/.netlify/functions/api?action=reward_ad", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ auth_token: authToken })
+            });
+            const data = await res.json();
+            if (!res.ok || data.error) throw new Error(data.error || "Ad verification failed");
+
+            document.getElementById("tokenCount").innerText = data.tokens;
+            alert(data.message);
+          } catch (err) {
+            alert("Ad Reward Info: " + err.message);
+          } finally {
+            adCountdownInProgress = false;
+            btn.innerText = originalText;
+          }
+        }
+      }, 1000);
+
+      // Return true so the Smartlink opens in a new tab naturally without popup blocker
+      return true;
     }
 
     async function submitAuth() {
