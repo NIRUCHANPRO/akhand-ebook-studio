@@ -91,7 +91,6 @@ exports.handler = async (event) => {
     ]);
     if (blockedDomains.has(domain)) return true;
     if (local.length < 4 || /^(test|fake|user|admin|abcd|asdf|qwerty|1234)/i.test(local)) return true;
-    // Block repeated gibberish like aaaaa@gmail.com
     if (/^(.)\1{3,}/.test(local)) return true;
     return false;
   }
@@ -132,7 +131,7 @@ exports.handler = async (event) => {
     const action = event.queryStringParameters?.action || "";
 
     // =========================================================
-    // 1. SIGN UP / LOGIN (WITH IP + DEVICE ANTI-ABUSE LOCK!)
+    // 1. SIGN UP / LOGIN (WITH IP + DEVICE ANTI-ABUSE LOCK)
     // =========================================================
     if (action === "auth" && event.httpMethod === "POST") {
       const email = (body.email || "").trim().toLowerCase();
@@ -160,7 +159,6 @@ exports.handler = async (event) => {
       const passHash = hashStr(password + GH_PAT);
 
       if (!existingUser) {
-        // Check if this IP or Device has ALREADY claimed the 10 Free Tokens!
         const ipClaimFile = `db/claims/ip_${hashStr(clientIp).slice(0, 16)}.json`;
         const devClaimFile = deviceId ? `db/claims/dev_${hashStr(deviceId).slice(0, 16)}.json` : null;
 
@@ -196,7 +194,7 @@ exports.handler = async (event) => {
             tokens: startingTokens,
             is_new: true,
             message: alreadyClaimedFreeTokens
-              ? "⚠️ Is device/network par 10 Free Tokens pehle hi dusre account par mil chuke hain! Is naye account mein 0 Tokens hain. Recharge (₹1 = 5 Tokens) karke use karein."
+              ? "⚠️ Is device/network par 10 Free Tokens pehle hi dusre account par mil chuke hain! Is naye account mein 0 Tokens hain."
               : "🎉 Welcome! Aapko 10 FREE Tokens mile hain!"
           })
         };
@@ -238,7 +236,65 @@ exports.handler = async (event) => {
     }
 
     // =========================================================
-    // 3. BACKUP CLAIM BY CASHFREE ORDER ID (e.g. CFPay_...)
+    // 3. SMARTLINK AD REWARD (+1 TOKEN WITH COOLDOWN & DAILY LIMIT)
+    // =========================================================
+    if (action === "reward_ad" && event.httpMethod === "POST") {
+      const email = verifyAuthToken(body.auth_token);
+      if (!email) {
+        return { statusCode: 401, headers, body: JSON.stringify({ error: "Pehle Sign-In karo!" }) };
+      }
+
+      const userFile = `db/users/${hashStr(email).slice(0, 20)}.json`;
+      const { data: user, sha: userSha } = await readGhJson(userFile);
+      if (!user) {
+        return { statusCode: 404, headers, body: JSON.stringify({ error: "User account nahi mila!" }) };
+      }
+
+      const now = Date.now();
+      const lastAdAt = Number(user.last_ad_at || 0);
+
+      // 20-second anti-spam cooldown
+      if (now - lastAdAt < 20000) {
+        const waitSec = Math.ceil((20000 - (now - lastAdAt)) / 1000);
+        return {
+          statusCode: 429,
+          headers,
+          body: JSON.stringify({ error: `Bhai thoda ruko! Agla Ad Token ${waitSec} second baad claim hoga.` })
+        };
+      }
+
+      // Max 15 free ad tokens per day per user
+      const todayKey = new Date().toISOString().slice(0, 10);
+      const adDayCount = user.ad_day === todayKey ? Number(user.ad_day_count || 0) : 0;
+      if (adDayCount >= 15) {
+        return {
+          statusCode: 429,
+          headers,
+          body: JSON.stringify({ error: "Aaj ke 15 Free Ad Tokens poore ho gaye! Ab ₹1 = 5 Tokens wala instant recharge kar lo." })
+        };
+      }
+
+      user.tokens = (Number(user.tokens) || 0) + 1;
+      user.last_ad_at = now;
+      user.ad_day = todayKey;
+      user.ad_day_count = adDayCount + 1;
+
+      await writeGhJson(userFile, user, `Smartlink Ad reward +1 token to ${email}`, userSha);
+
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          success: true,
+          tokens: user.tokens,
+          remaining_today: 15 - user.ad_day_count,
+          message: `🎉 +1 Free Token Added! (Aaj ${15 - user.ad_day_count} Ad rewards aur bache hain)`
+        })
+      };
+    }
+
+    // =========================================================
+    // 4. BACKUP CLAIM BY CASHFREE ORDER ID (e.g. CFPay_...)
     // =========================================================
     if (action === "claim_order" && event.httpMethod === "POST") {
       const email = verifyAuthToken(body.auth_token);
@@ -274,7 +330,7 @@ exports.handler = async (event) => {
       }
 
       const paidAmount = Math.max(1, Math.floor(Number(cfData.order_amount || 1)));
-      const tokensEarned = paidAmount * 5; // ₹1 = 5 Tokens
+      const tokensEarned = paidAmount * 5;
 
       const userFile = `db/users/${hashStr(email).slice(0, 20)}.json`;
       const { data: user, sha: userSha } = await readGhJson(userFile);
@@ -304,7 +360,7 @@ exports.handler = async (event) => {
     }
 
     // =========================================================
-    // 4. DEDUCT TOKENS & START E-BOOK GENERATION ON GITHUB
+    // 5. DEDUCT TOKENS & START E-BOOK GENERATION ON GITHUB
     // =========================================================
     if (action === "start" && event.httpMethod === "POST") {
       const email = verifyAuthToken(body.auth_token);
@@ -369,7 +425,7 @@ exports.handler = async (event) => {
     }
 
     // =========================================================
-    // 5. POLL LIVE E-BOOK PROGRESS STATUS
+    // 6. POLL LIVE E-BOOK PROGRESS STATUS
     // =========================================================
     if (action === "status" && event.queryStringParameters?.job_id) {
       const jobId = event.queryStringParameters.job_id;
@@ -385,7 +441,7 @@ exports.handler = async (event) => {
     }
 
     // =========================================================
-    // 6. AUTOMATIC CASHFREE WEBHOOK HANDLER (INSTANT CREDIT!)
+    // 7. AUTOMATIC CASHFREE WEBHOOK HANDLER
     // =========================================================
     const wfData = body.data || body || {};
     const orderObj = wfData.order || {};
@@ -445,7 +501,7 @@ exports.handler = async (event) => {
       const { data: existingOrder } = await readGhJson(orderFile);
 
       if (!existingOrder) {
-        const tokensEarned = rawAmount * 5; // ₹1 = 5 Tokens
+        const tokensEarned = rawAmount * 5;
         const userFile = `db/users/${hashStr(rawEmail).slice(0, 20)}.json`;
         const { data: user, sha: userSha } = await readGhJson(userFile);
 
