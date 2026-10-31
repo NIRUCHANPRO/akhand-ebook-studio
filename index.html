@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Google Search Console Verification Tag -->
   <meta name="google-site-verification" content="JnxSzFvctn_7FYyO6yyhvAgPHoG7yep1LIiyKrJdM18" />
-  <title>Akhand AI E-Book Studio 24/7</title>
+  <title>Akhand AI E-Book Studio - Create 1000+ Page PDF E-Books</title>
+  <meta name="description" content="Create high-resolution PDF e-books instantly using our 24/7 cloud AI engine. Get 10 free tokens on signup!" />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-cyan-500 selection:text-slate-950">
 
   <!-- TOP NAVBAR -->
@@ -122,14 +122,14 @@
           class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-cyan-400"></textarea>
       </div>
 
-      <!-- Main Generate + Quick Watch Ad Bar -->
+      <!-- Main Generate + Optional Watch Ad Button (Zero Auto-Popup!) -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         <button id="genBtn" onclick="startGeneration()"
           class="md:col-span-2 w-full py-4 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 transition shadow-lg shadow-cyan-500/20">
           🚀 Generate High-Res E-Book PDF (Cost: 5 🪙 Tokens)
         </button>
 
-        <a id="mainWatchAdBtn" href="https://araplhn.org/4/917d3c50c18e93fbac36e0b876200f4f" target="_blank" rel="noopener"
+        <a id="mainWatchAdBtn" href="https://araplhn.org/4/917d3c50c18e93fbac36e0b876200f4f" target="_blank" rel="noopener noreferrer"
           onclick="return handleSmartlinkAdClick(event, 'mainWatchAdBtn')"
           class="w-full py-4 px-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 transition shadow-lg shadow-purple-600/20 flex items-center justify-center text-xs md:text-sm text-center">
           🎬 Watch 15s Ad (+1 🪙 FREE)
@@ -149,25 +149,6 @@
           class="hidden block text-center w-full py-4 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition shadow-lg shadow-emerald-600/30">
           📥 Download Your Completed E-Book (PDF)
         </a>
-      </div>
-
-      <!-- ========================================================= -->
-      <!-- 300x250 BANNER AD SLOT                                    -->
-      <!-- ========================================================= -->
-      <div class="pt-4 border-t border-slate-800/80 flex flex-col items-center justify-center">
-        <span class="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Sponsored Advertisement</span>
-        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-2 flex items-center justify-center min-w-[300px] min-h-[250px] overflow-hidden">
-          <script>
-            atOptions = {
-              'key' : 'f599495322f08877f67fcb6fa23d6aa7',
-              'format' : 'iframe',
-              'height' : 250,
-              'width' : 300,
-              'params' : {}
-            };
-          </script>
-          <script src="https://bauval.org/22/f599495322f08877f67fcb6fa23d6aa7"></script>
-        </div>
       </div>
 
     </div>
@@ -210,13 +191,13 @@
         <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
       </div>
 
-      <!-- FREE SMARTLINK AD REWARD BUTTON -->
+      <!-- FREE SMARTLINK AD REWARD BUTTON (ONLY OPENS WHEN CLICKED) -->
       <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-3.5 space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold text-purple-300 uppercase tracking-wider">🎁 Option 1: Free Sponsored Reward</span>
           <span class="text-xs font-extrabold text-amber-400">+1 Token / Ad</span>
         </div>
-        <a id="modalWatchAdBtn" href="https://araplhn.org/4/917d3c50c18e93fbac36e0b876200f4f" target="_blank" rel="noopener"
+        <a id="modalWatchAdBtn" href="https://araplhn.org/4/917d3c50c18e93fbac36e0b876200f4f" target="_blank" rel="noopener noreferrer"
           onclick="return handleSmartlinkAdClick(event, 'modalWatchAdBtn')"
           class="block text-center w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 transition shadow-lg shadow-purple-600/20 text-sm">
           🎬 Watch 15s Sponsor Ad (+1 FREE Token)
@@ -285,9 +266,6 @@
   <script>
     // 👇👇 BHAI YAHAN APNA CASHFREE PAYMENT FORM LINK DAAL DENA: 👇👇
     const CF_PAYMENT_FORM_URL = "https://payments.cashfree.com/forms?code=uriNC";
-
-    // Tumhara Smartlink URL pehle se set hai:
-    const SMARTLINK_AD_URL = "https://araplhn.org/4/917d3c50c18e93fbac36e0b876200f4f";
 
     let pollTimer = null;
     let balancePollTimer = null;
@@ -364,7 +342,7 @@
     }
 
     // =========================================================
-    // SMARTLINK AD WATCH HANDLER (15s TIMER -> +1 FREE TOKEN)
+    // SMARTLINK AD WATCH HANDLER (ONLY RUNS ON BUTTON CLICK!)
     // =========================================================
     function handleSmartlinkAdClick(event, btnId) {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
@@ -413,7 +391,6 @@
         }
       }, 1000);
 
-      // Return true so the Smartlink opens in a new tab naturally without popup blocker
       return true;
     }
 
