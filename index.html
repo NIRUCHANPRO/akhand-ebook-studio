@@ -139,6 +139,25 @@
         </a>
       </div>
 
+      <!-- ========================================================= -->
+      <!-- 300x250 BANNER AD SLOT (ALWAYS VISIBLE FOR MAX EARNINGS)  -->
+      <!-- ========================================================= -->
+      <div class="pt-4 border-t border-slate-800/80 flex flex-col items-center justify-center">
+        <span class="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Sponsored Advertisement</span>
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-2 flex items-center justify-center min-w-[300px] min-h-[250px] overflow-hidden">
+          <script>
+            atOptions = {
+              'key' : 'f599495322f08877f67fcb6fa23d6aa7',
+              'format' : 'iframe',
+              'height' : 250,
+              'width' : 300,
+              'params' : {}
+            };
+          </script>
+          <script src="https://bauval.org/22/f599495322f08877f67fcb6fa23d6aa7"></script>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -246,7 +265,6 @@
     let balancePollTimer = null;
     let prePaymentTokens = 0;
 
-    // Generate unique hardware/browser device fingerprint so nobody can farm 10 free tokens
     function getDeviceFingerprint() {
       let saved = localStorage.getItem("AKHAND_DEV_FP");
       if (saved) return saved;
@@ -276,7 +294,6 @@
       }
     });
 
-    // Auto-check balance immediately whenever user switches back from Cashfree payment tab!
     window.addEventListener("focus", () => {
       if (localStorage.getItem("AKHAND_AUTH_TOKEN")) {
         checkIfWebhookCreditedTokens();
@@ -391,11 +408,8 @@
       document.getElementById("navLoggedOut").classList.remove("hidden");
     }
 
-    // =========================================================
-    // 1. ZERO-BLOCKER PAYMENT WATCHER (AUTO-UPDATES ON RETURN)
-    // =========================================================
     function startAutoPaymentWatcher() {
-      copyUserEmail(); // Automatically copies user's email so they can just paste it on Cashfree!
+      copyUserEmail();
       prePaymentTokens = Number(document.getElementById("tokenCount").innerText || 0);
       document.getElementById("waitingWebhookNote").classList.remove("hidden");
 
@@ -424,9 +438,6 @@
       }
     }
 
-    // =========================================================
-    // 2. BACKUP MANUAL ORDER ID CLAIM
-    // =========================================================
     async function claimByOrderId() {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
       const orderId = document.getElementById("manualOrderId").value.trim();
@@ -462,9 +473,6 @@
       }
     }
 
-    // =========================================================
-    // 3. START E-BOOK GENERATION
-    // =========================================================
     async function startGeneration() {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
       if (!authToken) {
