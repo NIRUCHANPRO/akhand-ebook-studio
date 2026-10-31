@@ -152,30 +152,34 @@
       </div>
 
       <!-- ========================================================= -->
-      <!-- AD SLOT 1: 300x250 BANNER AD (JO PEHLE CHALU THA)         -->
+      <!-- SANDBOXED AD SLOT 1: 300x250 BANNER (ZERO HIJACK LOCK)    -->
       <!-- ========================================================= -->
       <div class="pt-4 border-t border-slate-800/80 flex flex-col items-center justify-center">
         <span class="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Sponsored Advertisement</span>
-        <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 flex items-center justify-center min-w-[300px] min-h-[250px]">
-          <script type="text/javascript">
-            atOptions = {
-              'key' : 'f599495322f08877f67fcb6fa23d6aa7',
-              'format' : 'iframe',
-              'height' : 250,
-              'width' : 300,
-              'params' : {}
-            };
-          </script>
-          <script type="text/javascript" src="https://bauval.org/22/f599495322f08877f67fcb6fa23d6aa7"></script>
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 flex items-center justify-center">
+          <iframe
+            sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+            scrolling="no"
+            frameborder="0"
+            style="width: 305px; height: 255px; border: none; overflow: hidden;"
+            srcdoc="<!DOCTYPE html><html><body style='margin:0;padding:0;background:#020617;display:flex;justify-content:center;align-items:center;'><script type='text/javascript'>atOptions={'key':'f599495322f08877f67fcb6fa23d6aa7','format':'iframe','height':250,'width':300,'params':{}};</script><script type='text/javascript' src='https://bauval.org/22/f599495322f08877f67fcb6fa23d6aa7'></script></body></html>">
+          </iframe>
         </div>
       </div>
 
       <!-- ========================================================= -->
-      <!-- AD SLOT 2: NATIVE BANNER WIDGET                           -->
+      <!-- SANDBOXED AD SLOT 2: NATIVE BANNER (ZERO HIJACK LOCK)     -->
       <!-- ========================================================= -->
       <div class="pt-2">
-        <script async="async" data-cfasync="false" src="https://bauval.org/21/afe85bc1c98050988ffa3670a2ae603a"></script>
-        <div id="container-afe85bc1c98050988ffa3670a2ae603a"></div>
+        <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2 overflow-hidden">
+          <iframe
+            sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+            scrolling="no"
+            frameborder="0"
+            style="width: 100%; height: 260px; border: none; overflow: hidden;"
+            srcdoc="<!DOCTYPE html><html><body style='margin:0;padding:0;background:transparent;color:#cbd5e1;font-family:sans-serif;'><script async='async' data-cfasync='false' src='https://bauval.org/21/afe85bc1c98050988ffa3670a2ae603a'></script><div id='container-afe85bc1c98050988ffa3670a2ae603a'></div></body></html>">
+          </iframe>
+        </div>
       </div>
 
     </div>
@@ -648,11 +652,5 @@
       document.getElementById("statusText").innerText = msg;
     }
   </script>
-
-  <!-- ========================================================= -->
-  <!-- AD SLOT 3: ADSTERRA SOCIAL BAR SCRIPT                     -->
-  <!-- ========================================================= -->
-  <script type="text/javascript" data-cfasync="false" src="https://bauval.org/14/9d470b26c91b51ad563bd96f5b492123"></script>
-
 </body>
 </html>
