@@ -1,9 +1,9 @@
 {
   "job_id": "job_1793432566171",
-  "progress": 95,
-  "message": "Direct Binary Streaming 67 Pages into PDF (0 MB RAM)...",
-  "done": false,
-  "pdf_url": "",
+  "progress": 100,
+  "message": "V6.0 Akhand Granth Ready! (67 Pages, 12 Deep Modules)",
+  "done": true,
+  "pdf_url": "https://github.com/NIRUCHANPRO/akhand-ebook-studio/releases/download/ebooks-vault/Akhandanand_job_1793432566171.pdf",
   "error": "",
-  "updated_at": 1793432952
+  "updated_at": 1793432956
 }
