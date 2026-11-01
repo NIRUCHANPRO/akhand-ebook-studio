@@ -1,84 +1,168 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="hi" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <!-- Google Search Console Verification Tag -->
   <meta name="google-site-verification" content="JnxSzFvctn_7FYyO6yyhvAgPHoG7yep1LIiyKrJdM18" />
-  <title>Akhand AI E-Book Studio - Create 1000+ Page PDF E-Books</title>
+  <title>Akhand AI E-Book Studio Pro</title>
   <meta name="description" content="Create high-resolution PDF e-books instantly using our 24/7 cloud AI engine. Get 10 free tokens on signup!" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #030712;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(51, 65, 85, 0.6);
+    }
+    .vol-card.active {
+      border-color: #22d3ee;
+      background: linear-gradient(145deg, rgba(6, 182, 212, 0.15), rgba(15, 23, 42, 0.9));
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.15);
+    }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-cyan-500 selection:text-slate-950">
+<body class="text-slate-100 min-h-screen pb-24 selection:bg-cyan-500 selection:text-slate-950">
 
-  <!-- TOP NAVBAR -->
-  <nav class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
-    <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
-      <div class="flex items-center gap-2">
-        <span class="text-xl font-extrabold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-          ⚡ Akhand E-Book Studio
-        </span>
-      </div>
-
-      <!-- Logged Out View -->
-      <div id="navLoggedOut" class="flex items-center gap-3">
-        <button onclick="openAuthModal()"
-          class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-bold text-xs md:text-sm shadow-lg shadow-amber-500/20 hover:opacity-95 transition">
-          🎁 Sign In / Claim 10 FREE Tokens
-        </button>
-      </div>
-
-      <!-- Logged In View -->
-      <div id="navLoggedIn" class="hidden flex items-center gap-2.5">
-        <span id="userNameBadge" class="text-xs text-slate-400 hidden sm:inline"></span>
-        <div class="px-3.5 py-1.5 rounded-xl bg-slate-950 border border-cyan-500/40 flex items-center gap-1.5">
-          <span class="text-amber-400">🪙</span>
-          <span id="tokenCount" class="font-mono font-extrabold text-cyan-300 text-sm">0</span>
-          <span class="text-xs text-slate-400">Tokens</span>
-        </div>
-        <button onclick="openRechargeModal()"
-          class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs md:text-sm transition shadow-lg shadow-emerald-500/20">
-          + Get Tokens (₹1 or Watch Ad)
-        </button>
-        <button onclick="logoutUser()" class="text-xs text-slate-500 hover:text-rose-400 px-2">Logout</button>
-      </div>
-    </div>
-  </nav>
-
-  <div class="max-w-4xl mx-auto px-4 py-8">
-    <!-- Hero Banner -->
-    <div class="text-center mb-8">
-      <span class="px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-400 text-xs font-bold tracking-widest uppercase">
-        24/7 Cloud E-Book Publishing Engine • ₹1 = 5 Tokens
-      </span>
-      <h1 class="text-3xl md:text-5xl font-extrabold mt-4 bg-gradient-to-r from-cyan-400 via-sky-300 to-purple-400 bg-clip-text text-transparent">
-        Create 1,000+ Page Kindle E-Books
-      </h1>
-      <p class="text-slate-400 mt-2 text-sm md:text-base">
-        Naye user ko <strong class="text-amber-400">10 Tokens FREE!</strong> Uske baad <strong class="text-emerald-400">₹1 mein 5 Tokens</strong> lo ya <strong class="text-purple-400">15s Ad dekh kar Free Token</strong> kamao!
-      </p>
-    </div>
-
-    <!-- Main Studio Card -->
-    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6">
+  <!-- ========================================================= -->
+  <!-- SLEEK MOBILE-APP TOP HEADER                               -->
+  <!-- ========================================================= -->
+  <header class="sticky top-0 z-40 bg-slate-950/85 backdrop-blur-xl border-b border-slate-800/80">
+    <div class="max-w-4xl mx-auto px-3.5 py-3 flex items-center justify-between gap-2">
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Book Title (Optional)</label>
-          <input id="title" type="text" placeholder="e.g. Akhand Unity & C# Masterclass"
-            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 font-black text-slate-950 text-lg">
+          ⚡
         </div>
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Author Name</label>
-          <input id="author" type="text" placeholder="e.g. William James Sidis"
-            class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
+          <div class="font-extrabold text-sm md:text-base tracking-tight text-white leading-none">
+            Akhand <span class="text-cyan-400">Studio</span>
+          </div>
+          <span class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1 mt-0.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Cloud AI Online
+          </span>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Logged Out Button -->
+      <div id="navLoggedOut">
+        <button onclick="openAuthModal()"
+          class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-extrabold text-xs shadow-lg shadow-amber-500/20 active:scale-95 transition">
+          🎁 Claim 10 Free 🪙
+        </button>
+      </div>
+
+      <!-- Logged In Compact Wallet Pill -->
+      <div id="navLoggedIn" class="hidden flex items-center gap-2">
+        <div onclick="openRechargeModal()" class="cursor-pointer px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 flex items-center gap-1.5 hover:border-cyan-400/50 transition">
+          <span class="text-sm">🪙</span>
+          <span id="tokenCount" class="font-extrabold text-cyan-300 text-xs md:text-sm">0</span>
+          <span class="ml-1 px-1.5 py-0.5 rounded-md bg-emerald-500 text-slate-950 font-black text-[10px]">+ ADD</span>
+        </div>
+        <button onclick="logoutUser()" title="Logout" class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-rose-400 text-xs">
+          🚪
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========================================================= -->
+  <!-- MAIN APP CONTAINER                                        -->
+  <!-- ========================================================= -->
+  <main class="max-w-3xl mx-auto px-3.5 pt-5 space-y-5">
+
+    <!-- App Hero Promo Card -->
+    <div class="glass-card rounded-2xl p-4 md:p-5 relative overflow-hidden">
+      <div class="flex items-center justify-between gap-3">
+        <div class="space-y-1">
+          <span class="inline-block px-2.5 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 text-[10px] font-bold uppercase tracking-wider">
+            Pro Publishing Engine v2.5
+          </span>
+          <h1 class="text-xl md:text-2xl font-extrabold text-white leading-tight">
+            Generate Complete PDF E-Books
+          </h1>
+          <p class="text-xs text-slate-400">
+            Sign up par <strong class="text-amber-400">10 Free Tokens</strong> • Recharge <strong class="text-emerald-400">₹1 = 5 Tokens</strong>
+          </p>
+        </div>
+        <button onclick="triggerRewardAd('heroWatchBtn')" id="heroWatchBtn"
+          class="shrink-0 px-3.5 py-3 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 text-white font-extrabold text-xs shadow-lg shadow-purple-600/30 active:scale-95 transition text-center leading-tight">
+          🎬 Watch Ad<br><span class="text-[10px] text-amber-300">+1 Free 🪙</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- STUDIO CREATION FORM CARD                                 -->
+    <!-- ========================================================= -->
+    <div class="glass-card rounded-2xl p-4 md:p-6 space-y-5 shadow-2xl">
+
+      <!-- Step 1: Select Book Volume (Interactive App Cards) -->
+      <div>
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">
+          1. Select E-Book Size & Token Cost
+        </label>
+        <input type="hidden" id="volume" value="standard" />
+        <div class="grid grid-cols-3 gap-2.5">
+          <div onclick="selectVolumeCard('quick', 2)" id="card-quick"
+            class="vol-card cursor-pointer rounded-xl border border-slate-800 bg-slate-900/70 p-3 text-center transition">
+            <div class="text-base">⚡</div>
+            <div class="font-bold text-xs text-white mt-1">Quick Guide</div>
+            <div class="text-[11px] font-extrabold text-cyan-400 mt-0.5">2 🪙 Tokens</div>
+          </div>
+
+          <div onclick="selectVolumeCard('standard', 5)" id="card-standard"
+            class="vol-card active cursor-pointer rounded-xl border border-slate-800 bg-slate-900/70 p-3 text-center transition">
+            <div class="text-base">📘</div>
+            <div class="font-bold text-xs text-white mt-1">Standard Book</div>
+            <div class="text-[11px] font-extrabold text-cyan-400 mt-0.5">5 🪙 Tokens</div>
+          </div>
+
+          <div onclick="selectVolumeCard('mega', 10)" id="card-mega"
+            class="vol-card cursor-pointer rounded-xl border border-slate-800 bg-slate-900/70 p-3 text-center transition">
+            <div class="text-base">📚</div>
+            <div class="font-bold text-xs text-white mt-1">Mega Granth</div>
+            <div class="text-[11px] font-extrabold text-amber-400 mt-0.5">10 🪙 Tokens</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Book Title & Author -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Cover & Page Theme</label>
-          <select id="theme" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+            2. Book Title (Optional)
+          </label>
+          <input id="title" type="text" placeholder="e.g. Complete Unity & C# Mastery"
+            class="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+            Author Name
+          </label>
+          <input id="author" type="text" placeholder="e.g. William James Sidis"
+            class="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition" />
+        </div>
+      </div>
+
+      <!-- Step 3: Theme & Language -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+            3. Page & Cover Theme
+          </label>
+          <select id="theme" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-cyan-400">
             <option value="random">🎲 Auto-Random Pro Theme</option>
             <option value="obsidian">⚡ Kindle Obsidian Neon</option>
             <option value="sapphire">💎 O'Reilly Royal Sapphire</option>
@@ -89,113 +173,132 @@
         </div>
 
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Writing Language & Style</label>
-          <select id="language" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+            Writing Language
+          </label>
+          <select id="language" class="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white focus:outline-none focus:border-cyan-400">
             <option value="hinglish">🇮🇳 Energetic Hinglish (Bhai/Dosto Style)</option>
             <option value="english">🇬🇧 Professional Textbook English</option>
           </select>
         </div>
+      </div>
 
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Book Volume & Token Cost</label>
-          <select id="volume" onchange="updateButtonCost()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
-            <option value="quick">⚡ Quick Story / Guide (2 🪙 Tokens)</option>
-            <option value="standard" selected>📘 Standard Book (5 🪙 Tokens)</option>
-            <option value="mega">📚 Mega Granth 80+ Modules (10 🪙 Tokens)</option>
-          </select>
+      <!-- Step 4: Cover Prompt -->
+      <div>
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+          4. AI Cover Artwork Prompt (Optional)
+        </label>
+        <input id="cover_prompt" type="text" placeholder="e.g. Cyberpunk coder building 3D hologram in neon studio"
+          class="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition" />
+      </div>
+
+      <!-- Step 5: Main Syllabus / Topic -->
+      <div>
+        <div class="flex justify-between items-center mb-1.5">
+          <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            5. Book Topic or Full Chapter Syllabus *
+          </label>
+          <span class="text-[10px] text-cyan-400 font-semibold">AI Auto-Expands Chapters</span>
         </div>
+        <textarea id="topic" rows="5" placeholder="Apna topic likho ya Chapter 1, Chapter 2... syllabus paste karo. AI har chapter ko deep detail mein likhega!"
+          class="w-full bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition"></textarea>
       </div>
 
-      <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-          Custom Cover Artwork Description (Khali chhodoge toh AI khud topic se banayega)
-        </label>
-        <input id="cover_prompt" type="text" placeholder="e.g. Futuristic game developer coding holographic 3D robot in dark neon studio"
-          class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
-      </div>
-
-      <div>
-        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-          Book Topic / Story Idea / Full Chapter Syllabus *
-        </label>
-        <textarea id="topic" rows="7" placeholder="Yahan apna topic likho ya poora Chapter 1, Chapter 2... wala syllabus paste kar do!"
-          class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-cyan-400"></textarea>
-      </div>
-
-      <!-- Main Generate + Rewarded Smartlink Ad Button -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <!-- Primary Action Buttons -->
+      <div class="space-y-2.5 pt-1">
         <button id="genBtn" onclick="startGeneration()"
-          class="md:col-span-2 w-full py-4 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 transition shadow-lg shadow-cyan-500/20">
-          🚀 Generate High-Res E-Book PDF (Cost: 5 🪙 Tokens)
+          class="w-full py-4 rounded-xl font-extrabold text-sm md:text-base text-slate-950 bg-gradient-to-r from-cyan-400 via-sky-400 to-teal-300 hover:opacity-95 active:scale-[0.99] transition shadow-xl shadow-cyan-500/20">
+          🚀 Generate High-Res E-Book PDF (5 🪙 Tokens)
         </button>
 
-        <a id="mainWatchAdBtn" href="https://araplhn.org/4/917d3c50c18e93fbac36e0b876200f4f" target="_blank" rel="noopener noreferrer"
-          onclick="return handleSmartlinkAdClick(event, 'mainWatchAdBtn')"
-          class="w-full py-4 px-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 transition shadow-lg shadow-purple-600/20 flex items-center justify-center text-xs md:text-sm text-center">
-          🎬 Watch 15s Ad (+1 🪙 FREE)
-        </a>
+        <button id="mainWatchAdBtn" onclick="triggerRewardAd('mainWatchAdBtn')"
+          class="w-full py-3 rounded-xl font-bold text-xs md:text-sm text-purple-200 bg-purple-950/60 border border-purple-500/40 hover:bg-purple-900/60 active:scale-[0.99] transition flex items-center justify-center gap-2">
+          <span>🎬 Tokens Kam Hain? Watch 15s Ad (+1 🪙 FREE)</span>
+        </button>
       </div>
 
-      <!-- Live Progress Box -->
-      <div id="progressBox" class="hidden pt-4 border-t border-slate-800 space-y-4">
-        <div class="flex justify-between items-center text-sm">
-          <span id="statusText" class="text-cyan-400 font-semibold animate-pulse">Starting Cloud Engine...</span>
-          <span id="percentText" class="font-mono font-bold text-slate-200">0%</span>
+      <!-- Live Cloud Progress Tracker -->
+      <div id="progressBox" class="hidden pt-4 border-t border-slate-800/80 space-y-3">
+        <div class="flex justify-between items-center text-xs">
+          <span id="statusText" class="text-cyan-400 font-bold animate-pulse">Starting Cloud Engine...</span>
+          <span id="percentText" class="font-mono font-extrabold text-white bg-slate-800 px-2 py-0.5 rounded">0%</span>
         </div>
-        <div class="w-full h-4 bg-slate-950 rounded-full overflow-hidden border border-slate-800 p-0.5">
+        <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800 p-0.5">
           <div id="progressBar" class="h-full bg-gradient-to-r from-cyan-400 via-sky-500 to-purple-500 rounded-full transition-all duration-500" style="width: 2%"></div>
         </div>
         <a id="downloadBtn" href="#" target="_blank"
-          class="hidden block text-center w-full py-4 rounded-xl font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition shadow-lg shadow-emerald-600/30">
-          📥 Download Your Completed E-Book (PDF)
+          class="hidden block text-center w-full py-3.5 rounded-xl font-extrabold text-sm text-slate-950 bg-gradient-to-r from-emerald-400 to-green-400 shadow-lg shadow-emerald-500/25">
+          📥 Download Completed PDF E-Book
         </a>
       </div>
 
-      <!-- ========================================================= -->
-      <!-- SANDBOXED AD SLOT 1: 300x250 BANNER (ZERO HIJACK LOCK)    -->
-      <!-- ========================================================= -->
-      <div class="pt-4 border-t border-slate-800/80 flex flex-col items-center justify-center">
-        <span class="text-[10px] uppercase tracking-widest text-slate-500 mb-2">Sponsored Advertisement</span>
-        <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 flex items-center justify-center">
-          <iframe
-            sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-            scrolling="no"
-            frameborder="0"
-            style="width: 305px; height: 255px; border: none; overflow: hidden;"
-            srcdoc="<!DOCTYPE html><html><body style='margin:0;padding:0;background:#020617;display:flex;justify-content:center;align-items:center;'><script type='text/javascript'>atOptions={'key':'f599495322f08877f67fcb6fa23d6aa7','format':'iframe','height':250,'width':300,'params':{}};</script><script type='text/javascript' src='https://bauval.org/22/f599495322f08877f67fcb6fa23d6aa7'></script></body></html>">
-          </iframe>
-        </div>
-      </div>
-
-      <!-- ========================================================= -->
-      <!-- SANDBOXED AD SLOT 2: NATIVE BANNER (ZERO HIJACK LOCK)     -->
-      <!-- ========================================================= -->
-      <div class="pt-2">
-        <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2 overflow-hidden">
-          <iframe
-            sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-            scrolling="no"
-            frameborder="0"
-            style="width: 100%; height: 260px; border: none; overflow: hidden;"
-            srcdoc="<!DOCTYPE html><html><body style='margin:0;padding:0;background:transparent;color:#cbd5e1;font-family:sans-serif;'><script async='async' data-cfasync='false' src='https://bauval.org/21/afe85bc1c98050988ffa3670a2ae603a'></script><div id='container-afe85bc1c98050988ffa3670a2ae603a'></div></body></html>">
-          </iframe>
-        </div>
-      </div>
-
     </div>
-  </div>
+
+    <!-- ========================================================= -->
+    <!-- CLEAN SANDBOXED SPONSOR PARTNER SECTION                   -->
+    <!-- ========================================================= -->
+    <div class="glass-card rounded-2xl p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Sponsored Partner</span>
+        <span class="text-[10px] text-slate-600">Safe Sandbox</span>
+      </div>
+
+      <!-- 300x250 Banner Locked Inside Sandbox -->
+      <div class="flex justify-center bg-slate-950/80 rounded-xl p-2 border border-slate-800/70">
+        <iframe
+          sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+          scrolling="no"
+          frameborder="0"
+          style="width: 305px; height: 255px; border: none; overflow: hidden;"
+          srcdoc="<!DOCTYPE html><html><body style='margin:0;padding:0;background:#020617;display:flex;justify-content:center;align-items:center;'><script type='text/javascript'>atOptions={'key':'f599495322f08877f67fcb6fa23d6aa7','format':'iframe','height':250,'width':300,'params':{}};</script><script type='text/javascript' src='https://bauval.org/22/f599495322f08877f67fcb6fa23d6aa7'></script></body></html>">
+        </iframe>
+      </div>
+
+      <!-- Native Banner Locked Inside Sandbox -->
+      <div class="bg-slate-950/60 rounded-xl p-2 border border-slate-800/70 overflow-hidden">
+        <iframe
+          sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+          scrolling="no"
+          frameborder="0"
+          style="width: 100%; height: 250px; border: none; overflow: hidden;"
+          srcdoc="<!DOCTYPE html><html><body style='margin:0;padding:0;background:transparent;color:#cbd5e1;font-family:sans-serif;'><script async='async' data-cfasync='false' src='https://bauval.org/21/afe85bc1c98050988ffa3670a2ae603a'></script><div id='container-afe85bc1c98050988ffa3670a2ae603a'></div></body></html>">
+        </iframe>
+      </div>
+    </div>
+
+  </main>
 
   <!-- ========================================================= -->
-  <!-- MODAL 1: SIGN IN / SIGN UP                                -->
+  <!-- NATIVE ANDROID APP BOTTOM NAVIGATION BAR                  -->
+  <!-- ========================================================= -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/90">
+    <div class="max-w-md mx-auto grid grid-cols-3 py-2 px-4 text-center">
+      <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center gap-0.5 text-cyan-400">
+        <span class="text-lg">⚡</span>
+        <span class="text-[10px] font-bold">Create Book</span>
+      </button>
+      <button onclick="triggerRewardAd('heroWatchBtn')" class="flex flex-col items-center gap-0.5 text-purple-400">
+        <span class="text-lg">🎬</span>
+        <span class="text-[10px] font-bold">Free +1 Token</span>
+      </button>
+      <button onclick="openRechargeModal()" class="flex flex-col items-center gap-0.5 text-emerald-400">
+        <span class="text-lg">🪙</span>
+        <span class="text-[10px] font-bold">Buy Tokens (₹1)</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 1: SIGN IN / CREATE ACCOUNT                         -->
   <!-- ========================================================= -->
   <div id="authModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center">
-        <h2 class="text-xl font-extrabold text-white">🎁 Sign In / Create Account</h2>
+        <h2 class="text-lg font-extrabold text-white">🎁 Welcome to Akhand Studio</h2>
         <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
       </div>
       <p class="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3">
-        ✨ Apna asli Email daalein (1 Device par 1 baar <strong>10 FREE Tokens</strong> milte hain). Payment ke waqt bhi yahi email use hoga!
+        ✨ Naye account par <strong>10 FREE Tokens</strong> milte hain (1 Device = 1 Bonus). UPI recharge ke waqt bhi yahi email kaam aayega!
       </p>
       <div class="space-y-3">
         <input id="auth_name" type="text" placeholder="Aapka Naam (e.g. William James Sidis)"
@@ -206,113 +309,113 @@
           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400" />
       </div>
       <button id="authSubmitBtn" onclick="submitAuth()"
-        class="w-full py-3.5 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-orange-500 hover:opacity-95 transition">
-        Continue & Claim Tokens 🚀
+        class="w-full py-3.5 rounded-xl font-extrabold text-slate-950 bg-gradient-to-r from-amber-400 to-orange-500 hover:opacity-95 transition">
+        Continue & Claim 10 Tokens 🚀
       </button>
     </div>
   </div>
 
   <!-- ========================================================= -->
-  <!-- MODAL 2: CASHFREE RECHARGE + WATCH AD FOR FREE TOKEN      -->
+  <!-- MODAL 2: WALLET RECHARGE + REWARD AD                      -->
   <!-- ========================================================= -->
   <div id="rechargeModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center">
-        <h2 class="text-xl font-extrabold text-white">🪙 Get Studio Tokens</h2>
+        <h2 class="text-lg font-extrabold text-white">🪙 Studio Token Wallet</h2>
         <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
       </div>
 
-      <!-- FREE SMARTLINK AD REWARD BUTTON -->
+      <!-- Free Rewarded Ad Option -->
       <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-3.5 space-y-2">
         <div class="flex justify-between items-center">
-          <span class="text-xs font-bold text-purple-300 uppercase tracking-wider">🎁 Option 1: Free Sponsored Reward</span>
-          <span class="text-xs font-extrabold text-amber-400">+1 Token / Ad</span>
+          <span class="text-xs font-bold text-purple-300 uppercase">🎁 Option 1: Watch Ad</span>
+          <span class="text-xs font-extrabold text-amber-400">+1 Token Free</span>
         </div>
-        <a id="modalWatchAdBtn" href="https://araplhn.org/4/917d3c50c18e93fbac36e0b876200f4f" target="_blank" rel="noopener noreferrer"
-          onclick="return handleSmartlinkAdClick(event, 'modalWatchAdBtn')"
-          class="block text-center w-full py-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 transition shadow-lg shadow-purple-600/20 text-sm">
+        <button id="modalWatchAdBtn" onclick="triggerRewardAd('modalWatchAdBtn')"
+          class="w-full py-3 rounded-xl font-extrabold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 transition text-xs md:text-sm">
           🎬 Watch 15s Sponsor Ad (+1 FREE Token)
-        </a>
+        </button>
       </div>
 
-      <!-- Auto-Copied Registered Email Banner -->
+      <!-- UPI Payment Option -->
       <div class="bg-cyan-500/10 border border-cyan-500/30 rounded-xl p-3 flex items-center justify-between gap-2">
         <div class="text-xs text-slate-300">
           ⚡ <strong>Option 2: Instant UPI (₹1 = 5 Tokens)</strong><br/>
-          Payment Email: <strong id="rechargeEmailDisplay" class="text-cyan-300 font-mono"></strong>
+          Email: <strong id="rechargeEmailDisplay" class="text-cyan-300 font-mono"></strong>
         </div>
-        <button onclick="copyUserEmail()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold whitespace-nowrap">
-          📋 Copy Email
+        <button onclick="copyUserEmail()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold shrink-0">
+          📋 Copy
         </button>
       </div>
 
-      <!-- Quick Packs -->
-      <div class="grid grid-cols-2 gap-2.5">
-        <button onclick="setRechargeAmount(1)" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
-          <div class="text-base font-extrabold text-cyan-400">₹1</div>
-          <div class="text-xs text-slate-300 font-semibold">5 Tokens 🪙</div>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="setRechargeAmount(1)" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left">
+          <div class="text-sm font-extrabold text-cyan-400">₹1 Starter</div>
+          <div class="text-xs text-slate-300">5 Tokens 🪙</div>
         </button>
-        <button onclick="setRechargeAmount(5)" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
-          <div class="text-base font-extrabold text-cyan-400">₹5</div>
-          <div class="text-xs text-slate-300 font-semibold">25 Tokens 🪙</div>
+        <button onclick="setRechargeAmount(5)" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left">
+          <div class="text-sm font-extrabold text-cyan-400">₹5 Pack</div>
+          <div class="text-xs text-slate-300">25 Tokens 🪙</div>
         </button>
-        <button onclick="setRechargeAmount(10)" class="p-2.5 rounded-xl bg-slate-950 border border-cyan-500/50 hover:border-cyan-400 text-left transition">
-          <div class="text-base font-extrabold text-amber-400">₹10 (Popular)</div>
-          <div class="text-xs text-slate-300 font-semibold">50 Tokens 🪙</div>
+        <button onclick="setRechargeAmount(10)" class="p-2.5 rounded-xl bg-slate-950 border border-cyan-500/50 hover:border-cyan-400 text-left">
+          <div class="text-sm font-extrabold text-amber-400">₹10 Popular</div>
+          <div class="text-xs text-slate-300">50 Tokens 🪙</div>
         </button>
-        <button onclick="setRechargeAmount(25)" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left transition">
-          <div class="text-base font-extrabold text-emerald-400">₹25 (Mega Pack)</div>
-          <div class="text-xs text-slate-300 font-semibold">125 Tokens 🪙</div>
+        <button onclick="setRechargeAmount(25)" class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-400 text-left">
+          <div class="text-sm font-extrabold text-emerald-400">₹25 Mega</div>
+          <div class="text-xs text-slate-300">125 Tokens 🪙</div>
         </button>
       </div>
 
-      <!-- Direct Anchor Pay Button -->
       <a id="payBtn" href="#" target="_blank" rel="noopener" onclick="startAutoPaymentWatcher()"
-        class="block text-center w-full py-3.5 rounded-xl font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-400 hover:opacity-95 transition shadow-lg shadow-emerald-500/20">
-        💳 Proceed to UPI / QR Payment (Cashfree)
+        class="block text-center w-full py-3.5 rounded-xl font-extrabold text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-400 hover:opacity-95 transition">
+        💳 Pay via UPI App (Cashfree)
       </a>
 
       <p id="waitingWebhookNote" class="hidden text-center text-xs text-emerald-400 font-semibold animate-pulse">
-        ⏳ Payment complete hote hi aapke tokens yahan apne-aap jud jayenge...
+        ⏳ Payment hote hi tokens apne-aap jud jayenge...
       </p>
 
-      <!-- Hidden Backup Claim Box -->
       <div class="pt-2 border-t border-slate-800/80 text-center">
         <button onclick="toggleManualClaimBox()" class="text-[11px] text-slate-500 hover:text-slate-300 underline">
-          Payment kar diya par 1 min tak tokens nahi aaye? Yahan click karein
+          Payment kar diya par tokens nahi aaye? Order ID se claim karein
         </button>
-        <div id="manualClaimSection" class="hidden mt-2.5 flex gap-2">
-          <input id="manualOrderId" type="text" placeholder="Paste Receipt Order ID (CFPay_...)"
-            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400" />
+        <div id="manualClaimSection" class="hidden mt-2 flex gap-2">
+          <input id="manualOrderId" type="text" placeholder="Order ID (CFPay_...)"
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
           <button id="claimBtn" onclick="claimByOrderId()"
-            class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs whitespace-nowrap transition">
-            ⚡ Verify Now
+            class="px-3.5 py-2 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs shrink-0">
+            Verify
           </button>
         </div>
       </div>
-
     </div>
   </div>
 
   <script>
-    // 👇👇 BHAI YAHAN APNA CASHFREE PAYMENT FORM LINK DAAL DENA: 👇👇
+    // 👇👇 APNA CASHFREE PAYMENT FORM LINK YAHAN DAALEIN 👇👇
     const CF_PAYMENT_FORM_URL = "https://payments.cashfree.com/forms?code=uriNC";
+    const SMARTLINK_URL = "https://araplhn.org/4/917d3c50c18e93fbac36e0b876200f4f";
 
     let pollTimer = null;
     let balancePollTimer = null;
     let prePaymentTokens = 0;
     let adCountdownInProgress = false;
+    let lastAdRewardTime = 0;
+
+    function selectVolumeCard(vol, cost) {
+      document.getElementById("volume").value = vol;
+      ["quick", "standard", "mega"].forEach(v => {
+        document.getElementById("card-" + v).classList.remove("active");
+      });
+      document.getElementById("card-" + vol).classList.add("active");
+      document.getElementById("genBtn").innerText = `🚀 Generate High-Res E-Book PDF (${cost} 🪙 Tokens)`;
+    }
 
     function getDeviceFingerprint() {
       let saved = localStorage.getItem("AKHAND_DEV_FP");
       if (saved) return saved;
-      const raw = [
-        navigator.userAgent,
-        screen.width + "x" + screen.height,
-        screen.colorDepth,
-        Intl.DateTimeFormat().resolvedOptions().timeZone,
-        navigator.language
-      ].join("|");
+      const raw = [navigator.userAgent, screen.width, screen.height, Intl.DateTimeFormat().resolvedOptions().timeZone].join("|");
       let hash = 0;
       for (let i = 0; i < raw.length; i++) {
         hash = ((hash << 5) - hash) + raw.charCodeAt(i);
@@ -325,9 +428,7 @@
 
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("payBtn").href = CF_PAYMENT_FORM_URL;
-      updateButtonCost();
-      const savedToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
-      if (savedToken) {
+      if (localStorage.getItem("AKHAND_AUTH_TOKEN")) {
         refreshUserProfile();
       }
     });
@@ -338,18 +439,15 @@
       }
     });
 
-    function updateButtonCost() {
-      const vol = document.getElementById("volume").value;
-      const cost = vol === "quick" ? 2 : (vol === "mega" ? 10 : 5);
-      document.getElementById("genBtn").innerText = `🚀 Generate High-Res E-Book PDF (Cost: ${cost} 🪙 Tokens)`;
-    }
-
     function openAuthModal() { document.getElementById("authModal").classList.remove("hidden"); }
     function closeAuthModal() { document.getElementById("authModal").classList.add("hidden"); }
 
     function openRechargeModal() {
-      const email = localStorage.getItem("AKHAND_USER_EMAIL") || "";
-      document.getElementById("rechargeEmailDisplay").innerText = email;
+      if (!localStorage.getItem("AKHAND_AUTH_TOKEN")) {
+        openAuthModal();
+        return;
+      }
+      document.getElementById("rechargeEmailDisplay").innerText = localStorage.getItem("AKHAND_USER_EMAIL") || "";
       document.getElementById("payBtn").href = CF_PAYMENT_FORM_URL;
       document.getElementById("rechargeModal").classList.remove("hidden");
     }
@@ -368,43 +466,46 @@
       navigator.clipboard?.writeText(email);
     }
 
-    function setRechargeAmount(amt) {
-      copyUserEmail();
-    }
+    function setRechargeAmount(amt) { copyUserEmail(); }
 
-        let lastAdRewardTime = 0;
-
-    function handleSmartlinkAdClick(event, btnId) {
+    // =========================================================
+    // HYBRID AD TRIGGER: ADMOB IN APK OR ANTI-CHEAT SMARTLINK
+    // =========================================================
+    function triggerRewardAd(btnId) {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
       if (!authToken) {
-        event.preventDefault();
         closeRechargeModal();
         openAuthModal();
-        return false;
+        return;
+      }
+
+      // Agar Android App (AdMob Bridge) ke andar chal raha hai:
+      if (window.AndroidAdMob && typeof window.AndroidAdMob.showRewardedAd === "function") {
+        window.AndroidAdMob.showRewardedAd();
+        return;
       }
 
       if (adCountdownInProgress) {
-        event.preventDefault();
-        alert("Bhai abhi Ad verification chal raha hai!");
-        return false;
+        alert("Bhai abhi 15-second Ad verification chal raha hai!");
+        return;
       }
 
       const now = Date.now();
       const cooldownLeft = Math.ceil((30000 - (now - lastAdRewardTime)) / 1000);
       if (cooldownLeft > 0) {
-        event.preventDefault();
         alert(`⏳ Agla Free Token Ad ${cooldownLeft} second baad dekh sakte ho!`);
-        return false;
+        return;
       }
+
+      // Open Smartlink in new tab
+      window.open(SMARTLINK_URL, "_blank", "noopener,noreferrer");
 
       adCountdownInProgress = true;
       const btn = document.getElementById(btnId);
-      const originalText = btn.innerText;
+      const originalText = btn.innerHTML;
       const startTime = Date.now();
       let leftMainPage = false;
       let finished = false;
-
-      btn.innerText = "⏳ Ad Page Par 15s Rukein...";
 
       const onVisibilityChange = () => {
         if (document.hidden) {
@@ -415,19 +516,15 @@
       };
 
       document.addEventListener("visibilitychange", onVisibilityChange);
-      window.addEventListener("blur", () => { leftMainPage = true; }, { once: true });
 
       const timer = setInterval(() => {
-        if (document.hidden || !document.hasFocus()) {
-          leftMainPage = true;
-        }
+        if (document.hidden || !document.hasFocus()) leftMainPage = true;
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
         const secLeft = Math.max(0, 15 - elapsed);
 
         if (secLeft > 0) {
-          btn.innerText = `⏳ Watching Ad (${secLeft}s)...`;
-          // Agar 2.5 sec baad bhi user main page par hi hai (turant Back daba diya)
-          if (elapsed >= 2 && !document.hidden && document.hasFocus()) {
+          btn.innerText = `⏳ Watching (${secLeft}s)...`;
+          if (elapsed >= 3 && !document.hidden && document.hasFocus()) {
             cancelAdEarly(elapsed);
           }
         } else {
@@ -441,87 +538,44 @@
         clearInterval(timer);
         document.removeEventListener("visibilitychange", onVisibilityChange);
         adCountdownInProgress = false;
-        btn.innerText = originalText;
-        alert(`❌ Ad Adhura Chhod Diya! Aap sirf ${secSpent} second mein Back aa gaye. +1 Free Token ke liye Ad page par poore 15 second rukna zaroori hai!`);
+        btn.innerHTML = originalText;
+        alert(`❌ Aap sirf ${secSpent} second mein Back aa gaye! +1 Free Token ke liye Ad par poore 15 second rukna zaroori hai.`);
       }
 
       async function checkAdCompletion() {
         if (finished) return;
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
-
         if (elapsed < 15) {
           cancelAdEarly(elapsed);
           return;
         }
-
         finished = true;
         clearInterval(timer);
         document.removeEventListener("visibilitychange", onVisibilityChange);
-        btn.innerText = "⚡ Crediting +1 Token...";
-
-        try {
-          const res = await fetch("/.netlify/functions/api?action=reward_ad", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ auth_token: authToken })
-          });
-          const data = await res.json();
-          if (!res.ok || data.error) throw new Error(data.error || "Ad verification failed");
-
-          lastAdRewardTime = Date.now();
-          document.getElementById("tokenCount").innerText = data.tokens;
-          alert(data.message);
-        } catch (err) {
-          alert("Ad Reward Info: " + err.message);
-        } finally {
-          adCountdownInProgress = false;
-          btn.innerText = originalText;
-        }
+        btn.innerText = "⚡ Adding +1 🪙...";
+        await creditAdRewardToServer();
+        adCountdownInProgress = false;
+        btn.innerHTML = originalText;
       }
-
-      return true;
     }
 
-
-      if (adCountdownInProgress) {
-        event.preventDefault();
-        alert("Bhai abhi pichle Ad ka 15-second verification chal raha hai!");
-        return false;
+    // Called after 15s Web Ad OR directly by Android AdMob onUserEarnedReward
+    async function creditAdRewardToServer() {
+      const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
+      try {
+        const res = await fetch("/.netlify/functions/api?action=reward_ad", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ auth_token: authToken })
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || "Ad reward failed");
+        lastAdRewardTime = Date.now();
+        document.getElementById("tokenCount").innerText = data.tokens;
+        alert(data.message);
+      } catch (err) {
+        alert("Ad Reward Info: " + err.message);
       }
-
-      adCountdownInProgress = true;
-      const btn = document.getElementById(btnId);
-      const originalText = btn.innerText;
-      let secLeft = 15;
-
-      const timer = setInterval(async () => {
-        secLeft--;
-        if (secLeft > 0) {
-          btn.innerText = `⏳ Watching Ad (${secLeft}s)...`;
-        } else {
-          clearInterval(timer);
-          btn.innerText = "⚡ Crediting +1 Token...";
-          try {
-            const res = await fetch("/.netlify/functions/api?action=reward_ad", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ auth_token: authToken })
-            });
-            const data = await res.json();
-            if (!res.ok || data.error) throw new Error(data.error || "Ad verification failed");
-
-            document.getElementById("tokenCount").innerText = data.tokens;
-            alert(data.message);
-          } catch (err) {
-            alert("Ad Reward Info: " + err.message);
-          } finally {
-            adCountdownInProgress = false;
-            btn.innerText = originalText;
-          }
-        }
-      }, 1000);
-
-      return true;
     }
 
     async function submitAuth() {
@@ -531,23 +585,18 @@
       const btn = document.getElementById("authSubmitBtn");
 
       if (!email || !password) {
-        alert("Bhai Email aur Password dono daalo!");
+        alert("Email aur Password dono daalo!");
         return;
       }
 
       btn.disabled = true;
-      btn.innerText = "Verifying Account...";
+      btn.innerText = "Verifying...";
 
       try {
         const res = await fetch("/.netlify/functions/api?action=auth", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name,
-            email,
-            password,
-            device_id: getDeviceFingerprint()
-          })
+          body: JSON.stringify({ name, email, password, device_id: getDeviceFingerprint() })
         });
         const data = await res.json();
         if (!res.ok || data.error) throw new Error(data.error || "Login Failed");
@@ -558,14 +607,12 @@
 
         renderLoggedInState(data.name, data.tokens);
         closeAuthModal();
-        if (data.is_new) {
-          alert(data.message);
-        }
+        if (data.is_new) alert(data.message);
       } catch (err) {
         alert("Auth Error: " + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerText = "Continue & Claim Tokens 🚀";
+        btn.innerText = "Continue & Claim 10 Tokens 🚀";
       }
     }
 
@@ -574,21 +621,15 @@
       if (!authToken) return;
       try {
         const res = await fetch(`/.netlify/functions/api?action=me&auth_token=${encodeURIComponent(authToken)}&t=${Date.now()}`);
-        if (!res.ok) {
-          logoutUser();
-          return;
-        }
+        if (!res.ok) { logoutUser(); return; }
         const data = await res.json();
         renderLoggedInState(data.name, data.tokens);
-      } catch (e) {
-        console.log("Profile check error:", e);
-      }
+      } catch (e) {}
     }
 
     function renderLoggedInState(name, tokens) {
       document.getElementById("navLoggedOut").classList.add("hidden");
       document.getElementById("navLoggedIn").classList.remove("hidden");
-      document.getElementById("userNameBadge").innerText = `Hi, ${name}`;
       document.getElementById("tokenCount").innerText = tokens;
     }
 
@@ -602,7 +643,6 @@
       copyUserEmail();
       prePaymentTokens = Number(document.getElementById("tokenCount").innerText || 0);
       document.getElementById("waitingWebhookNote").classList.remove("hidden");
-
       if (balancePollTimer) clearInterval(balancePollTimer);
       balancePollTimer = setInterval(checkIfWebhookCreditedTokens, 3500);
     }
@@ -620,25 +660,20 @@
             const added = Number(data.tokens) - prePaymentTokens;
             document.getElementById("tokenCount").innerText = data.tokens;
             closeRechargeModal();
-            alert(`🎉 Payment Received Automatically! +${added} Tokens aapke wallet mein jud gaye!`);
+            alert(`🎉 Payment Received! +${added} Tokens aapke wallet mein jud gaye!`);
           }
         }
-      } catch (e) {
-        console.log("Checking balance...", e);
-      }
+      } catch (e) {}
     }
 
     async function claimByOrderId() {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
       const orderId = document.getElementById("manualOrderId").value.trim();
-      if (!orderId) {
-        alert("Receipt se Order ID (CFPay_...) copy karke daalo!");
-        return;
-      }
+      if (!orderId) { alert("Receipt se Order ID daalo!"); return; }
 
       const claimBtn = document.getElementById("claimBtn");
       claimBtn.disabled = true;
-      claimBtn.innerText = "Checking...";
+      claimBtn.innerText = "...";
 
       try {
         const res = await fetch("/.netlify/functions/api?action=claim_order", {
@@ -647,10 +682,8 @@
           body: JSON.stringify({ auth_token: authToken, order_id: orderId })
         });
         const data = await res.json();
-        if (!res.ok || data.error) throw new Error(data.error || "Order verification failed");
+        if (!res.ok || data.error) throw new Error(data.error || "Verification failed");
 
-        if (balancePollTimer) clearInterval(balancePollTimer);
-        balancePollTimer = null;
         document.getElementById("tokenCount").innerText = data.tokens;
         document.getElementById("manualOrderId").value = "";
         closeRechargeModal();
@@ -659,22 +692,16 @@
         alert("Claim Alert: " + err.message);
       } finally {
         claimBtn.disabled = false;
-        claimBtn.innerText = "⚡ Verify Now";
+        claimBtn.innerText = "Verify";
       }
     }
 
     async function startGeneration() {
       const authToken = localStorage.getItem("AKHAND_AUTH_TOKEN");
-      if (!authToken) {
-        openAuthModal();
-        return;
-      }
+      if (!authToken) { openAuthModal(); return; }
 
       const topic = document.getElementById("topic").value.trim();
-      if (!topic) {
-        alert("Bhai pehle Topic ya Syllabus toh daalo!");
-        return;
-      }
+      if (!topic) { alert("Bhai pehle Book Topic ya Syllabus daalo!"); return; }
 
       const btn = document.getElementById("genBtn");
       const pBox = document.getElementById("progressBox");
@@ -716,7 +743,7 @@
           document.getElementById("tokenCount").innerText = data.tokens_remaining;
         }
 
-        updateUI(5, data.message || "Job started on GitHub Cloud...");
+        updateUI(5, data.message || "Job started on Cloud...");
         pollTimer = setInterval(() => checkStatus(data.job_id), 4500);
       } catch (err) {
         alert("Error: " + err.message);
@@ -729,7 +756,7 @@
       try {
         const res = await fetch(`/.netlify/functions/api?action=status&job_id=${jobId}&t=${Date.now()}`);
         const data = await res.json();
-        updateUI(data.progress || 5, data.message || "Processing...");
+        updateUI(data.progress || 5, data.message || "Generating chapters...");
 
         if (data.done) {
           clearInterval(pollTimer);
@@ -743,9 +770,7 @@
             dBtn.classList.remove("hidden");
           }
         }
-      } catch (e) {
-        console.log("Polling...", e);
-      }
+      } catch (e) {}
     }
 
     function updateUI(pct, msg) {
@@ -754,19 +779,5 @@
       document.getElementById("statusText").innerText = msg;
     }
   </script>
-  <!-- SANDBOXED FLOATING SOCIAL BAR (ZERO AUTO-REDIRECT) -->
-  <div id="safeSocialBar" class="fixed bottom-3 right-3 z-40 bg-slate-900/95 border border-slate-700 rounded-2xl shadow-2xl p-1.5 flex flex-col items-end">
-    <button onclick="document.getElementById('safeSocialBar').remove()" class="text-[10px] text-slate-400 hover:text-white px-1.5 pb-0.5">
-      ✕ Close Ad
-    </button>
-    <iframe
-      sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-      scrolling="no"
-      frameborder="0"
-      style="width: 310px; height: 95px; border: none; overflow: hidden; border-radius: 10px;"
-      srcdoc="<!DOCTYPE html><html><body style='margin:0;padding:0;background:transparent;overflow:hidden;'><script type='text/javascript' data-cfasync='false' src='https://bauval.org/14/9d470b26c91b51ad563bd96f5b492123'></script></body></html>">
-    </iframe>
-  </div>
-
 </body>
 </html>
